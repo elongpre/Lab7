@@ -28,7 +28,6 @@ int main (void){
 	PortF_Init();
 	LCD_Init();
 	while(1){
-
 		for(i=0; i<240; i+=80){
 			for(j=0; j<320; j+=80){
 					LCD_Image(i,j,80,80,background);
