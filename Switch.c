@@ -22,8 +22,10 @@ void DelayWaitXms(void);
 uint32_t LastButton;
 
 void Switch_Init(void){
+  volatile uint32_t delay; 
 	DisableInterrupts();
   	SYSCTL_RCGCGPIO_R |= 0x00000010; // activate port E
+    delay = SYSCTL_RCGCGPIO_R;
   	GPIO_PORTE_AMSEL_R &= ~0x1E;// disable analog function on PE5-4
   	GPIO_PORTE_PCTL_R &= ~0x00FF0000; // configure PE5-4 as GPIO 
   	GPIO_PORTE_DIR_R &= ~0x1E;  // make PE5-4 in 
