@@ -24,38 +24,32 @@ uint32_t LastButton;
 void Switch_Init(void){
   volatile uint32_t delay; 
 	DisableInterrupts();
-  	SYSCTL_RCGCGPIO_R |= 0x00000010; // activate port E
+  	SYSCTL_RCGCGPIO_R |= 0x00000008; // activate port E
     delay = SYSCTL_RCGCGPIO_R;
-  	GPIO_PORTE_AMSEL_R &= ~0x1E;// disable analog function on PE5-4
-  	GPIO_PORTE_PCTL_R &= ~0x00FF0000; // configure PE5-4 as GPIO 
-  	GPIO_PORTE_DIR_R &= ~0x1E;  // make PE5-4 in 
-  	GPIO_PORTE_AFSEL_R &= ~0x1E;// disable alt funct on PE5-4 
-  	GPIO_PORTE_DEN_R |= 0x1E;   // enable digital I/O on PE5-4
-  	GPIO_PORTE_IS_R &= ~0x1E;   // PE5-4 is edge-sensitive 
-  	GPIO_PORTE_IBE_R &= ~0x1E;  // PE5-4 is not both edges 
-  	GPIO_PORTE_IEV_R |= 0x1E;   // PE5-4 rising edge event
-  	GPIO_PORTE_ICR_R = 0x1E;    // clear flag5-4
-  	GPIO_PORTE_IM_R |= 0x1E;    // enable interrupt on PE5-4
+  	GPIO_PORTD_AMSEL_R &= ~0x30;// disable analog function on PE5-4
+  	GPIO_PORTD_PCTL_R &= ~0x00FF0000; // configure PE5-4 as GPIO 
+  	GPIO_PORTD_DIR_R &= ~0x30;  // make PE5-4 in 
+  	GPIO_PORTD_AFSEL_R &= ~0x30;// disable alt funct on PE5-4 
+  	GPIO_PORTD_DEN_R |= 0x30;   // enable digital I/O on PE5-4
+  	GPIO_PORTD_IS_R &= ~0x30;   // PE5-4 is edge-sensitive 
+  	GPIO_PORTD_IBE_R &= ~0x30;  // PE5-4 is not both edges 
+  	GPIO_PORTD_IEV_R |= 0x30;   // PE5-4 rising edge event
+  	GPIO_PORTD_ICR_R = 0x30;    // clear flag5-4
+  	GPIO_PORTD_IM_R |= 0x30;    // enable interrupt on PE5-4
   	                            // GPIO PortE=priority 3
-  	NVIC_PRI1_R = (NVIC_PRI1_R&0xFFFFFF00)|0x00000060; // bits 5-7
-  	NVIC_EN0_R = 1<<4; // enable interrupt 4 in NVIC
+  	NVIC_PRI1_R = (NVIC_PRI1_R&0x00FFFFFF)|0x60000000; // bits 5-7
+  	NVIC_EN0_R = 1<<3; // enable interrupt 4 in NVIC
   	LastButton = 0;
   	EnableInterrupts();
 }
 
 void GPIOPortE_Handler(void){
-  if(GPIO_PORTE_RIS_R&0x02){  // poll PE1
-    GPIO_PORTE_ICR_R = 0x02;  // acknowledge flag
+  if(GPIO_PORTD_RIS_R&0x10){  // poll PE1
+    GPIO_PORTD_ICR_R = 0x10;  // acknowledge flag
     LastButton = 1;
-  } else if(GPIO_PORTE_RIS_R&0x04){  // poll PE2
-    GPIO_PORTE_ICR_R = 0x04;  // acknowledge flag
- 	LastButton = 2;
-  } else if(GPIO_PORTE_RIS_R&0x08){  // poll PE3
-    GPIO_PORTE_ICR_R = 0x08;  // acknowledge flag
-  	LastButton = 3;
-  } else if(GPIO_PORTE_RIS_R&0x10){  // poll PE4
-    GPIO_PORTE_ICR_R = 0x10;  // acknowledge flag
-  	LastButton = 4;
+  } else if(GPIO_PORTD_RIS_R&0x20){  // poll PE2
+    GPIO_PORTD_ICR_R = 0x20;  // acknowledge flag
+ 	  LastButton = 2;
   }
 }
 
