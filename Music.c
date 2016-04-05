@@ -9,6 +9,7 @@
 #include "DAC.h"
 #include "../inc/tm4c123gh6pm.h"
 #include "Music.h"
+#include "Song.h"
 
 #define C2 38223   // 65.406 Hz
 #define Cs2 36077   // 69.296 Hz
@@ -152,6 +153,9 @@ uint32_t BassWav;
 uint32_t TrebleWavLoc;
 uint32_t BassWavLoc;
 
+const uint16_t* SongFile;
+uint16_t SongLoc;
+
 void EnableInterrupts(void);
 void DisableInterrupts(void);
 void Timer0A_Init(uint32_t val);
@@ -166,14 +170,10 @@ void Music_Init(void){
 }
 
 void Music_Play(uint32_t tempo){
-  uint32_t val = 2400000000/tempo;
-  Timer0A_Init(val);
-	DAC_Init(SoundWave[0]);
-  TrebleDur = TrebleNotes[TrebleLoc].duration;
-  BassDur = BassNotes[BassLoc].duration;
-  Timer1A_Init(TrebleNotes[TrebleLoc].note);
-  Timer2A_Init(BassNotes[BassLoc].note);
-  //Timer3A_Init();
+  DAC_Init(song1[0]);
+  SongFile = song1;
+  SongLoc = 0;
+  Timer0A_Init(20000);  //4000hz music  
 }
 
 void Music_Stop(void){
@@ -217,30 +217,20 @@ void Timer0A_Init(uint32_t val){
 
 void Timer0A_Handler(void){
 	TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  PF2 ^= 0x04;
-  if(TrebleDur == 0){
-      if(TrebleLoc == 39){
-        TrebleLoc = 0;
-      } else {
-        TrebleLoc++;
-      }
-      TrebleDur = TrebleNotes[TrebleLoc].duration;
-      Timer1A_Init(TrebleNotes[TrebleLoc].note);
-  } else {
-    TrebleDur--;
-  }
-  if(BassDur == 0){
-      if(BassLoc == 46){
-        BassLoc = 0;
-      } else {
-        BassLoc++;
-      }
-      BassDur = BassNotes[BassLoc].duration;
-      Timer2A_Init(BassNotes[BassLoc].note);
-  } else {
-    BassDur--;
-  }
+  DAC_Out(SongFile[SongLoc]);
 
+  if((SongFile==song1)&&(SongLoc==SONGONE)){
+    SongFile = song2;
+    SongLoc = 0;
+  } else if((SongFile==song2)&&(SongLoc==SONGTWO)){
+    SongFile = song1;
+    SongLoc = 0;
+  // } else if((SongFile==song3)&&(SongLoc==SONGTHREE)){
+  //   SongFile = song1;
+  //   SongLoc = 0;
+  } else {
+    SongLoc++;
+  }
 }
 
 void Timer1A_Init(uint32_t val){
