@@ -12,7 +12,8 @@
 #include "ST7735.h"
 #include "DAC.h"
 #include "LCD.h"
-#include "Background.h"
+#include "GFX.h"
+#include "Song.h"
 
 #define PF1   (*((volatile uint32_t *)0x40025008))
 #define PF4   (*((volatile uint32_t *)0x40025040))
@@ -23,20 +24,22 @@ void DelayWait(uint32_t X);
 void Pause(void);
 
 int main (void){
-	uint16_t i, j, k;
 	PLL_Init(Bus80MHz);
 	PortF_Init();
 	LCD_Init();
-	while(1){
-
-		for(i=0; i<240; i+=80){
-			for(j=0; j<320; j+=80){
-					LCD_Image(i,j,80,80,background);
-			}
-		}
-		PF1 ^= 0x02;
-
-	}
+	GFX_Init();
+	GFX_Paddle(0, 160, 0);
+	GFX_Paddle(1, 200, 0);
+	GFX_Ball(160, 160, 0);
+	DelayWait(1000);
+	GFX_Paddle(0, 170, 0);
+	GFX_Paddle(1, 190, 0);
+	GFX_Ball(180, 180, 0);
+	DelayWait(1000);
+	GFX_Paddle(0, 20, 0);
+	GFX_Paddle(1, 20, 0);
+	GFX_Ball(30, 30, 0);
+	while(1);
 }
 
 int mainLab5 (void){
