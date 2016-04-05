@@ -1,5 +1,10 @@
 #include <stdint.h>
 
+#define PADDLEH	39
+#define PADDLEW	5
+#define PADDLEF	5
+#define BALLR 	5
+
 void GFX_Init(void);
 
 void GFX_Background(uint16_t option);
