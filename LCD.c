@@ -4,6 +4,16 @@
 #include "LCD.h"
 #include "../inc/tm4c123gh6pm.h"
 
+/*-------------------------------------
+Screen coordinates mimic a coordinate plane
+		 ________
+   (0,Y)|		 |(X,Y)
+		|		 |
+		|		 |
+		|		 | 	
+   (0,0)|________|(X,0)
+
+-------------------------------------*/
 void Write_Command(uint16_t Wcommand);
 void Write_Data(uint16_t Wdata);
 void Write_Command_Data(uint16_t Wcommand,uint16_t Wdata);
@@ -256,11 +266,11 @@ void Delay(uint32_t X){
   	}	
 }
 void LCD_Set_Address(uint16_t PX1,uint16_t PY1,uint16_t PX2,uint16_t PY2){
-	Write_Command_Data(68,(PX2 << 8) + PX1 );  //Column address start2
-	Write_Command_Data(69,PY1);        //Column address start1
-	Write_Command_Data(70,PY2);  //Column address end2
-	Write_Command_Data(78,PX1);        //Column address end1
-	Write_Command_Data(79,PY1);  //Row address start2
+	Write_Command_Data(68,(PY2 << 8) + PY1 );  //Column address start2
+	Write_Command_Data(69,PX1);        	//Column address start1
+	Write_Command_Data(70,PX2);  		//Column address end2
+	Write_Command_Data(78,PY1);        	//Column address end1
+	Write_Command_Data(79,PX1);  		//Row address start2
 	Write_Command(34);
 }
 
@@ -355,6 +365,7 @@ void LCD_Init(void){
 	Write_Command_Data(0x004e,0x0000); //Delay(1); 
 	Write_Command(0x0022); //Delay(1);
 	LCD_CS = 0x40;		//Delay(1);
+	LCD_Fill(LCD_BLACK);
 }
 
 
@@ -370,10 +381,10 @@ uint16_t LCD_Color(uint16_t r,uint16_t g,uint16_t b){
 void LCD_Fill(uint16_t color){
 	uint16_t i,j;
 	LCD_CS  = 0x00;		
-	LCD_Set_Address(0,0,239,319);
+	LCD_Set_Address(0,0,319,239);
 	Write_Data(color);
-	for(i = 0; i <= 319; i++){
-		for(j = 0; j <= 239; j++){
+	for(i = 0; i <= 239; i++){
+		for(j = 0; j <= 319; j++){
 			LCD_WR = 0x00;
 			LCD_WR = 0x10;
 		}
@@ -389,8 +400,8 @@ void LCD_Box(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint16_t color){
 	Write_Data(color);
 	for(i = y1; i <= y2; i++){
 		for(j = x1; j <= x2; j++){
-			LCD_WR = 0;
-			LCD_WR = 1;
+			LCD_WR = 0x00;
+			LCD_WR = 0x10;
 		}
 	}
 	LCD_CS = 0x40;
@@ -521,16 +532,16 @@ void LCD_Char(char C,uint16_t x,uint16_t y,uint16_t DimFont,uint16_t Fcolor,uint
 
 		LCD_CS = 0;
 		LCD_Set_Address(x,y,x+7,y+7);
-		for(i = 0; i <= 7; i++){
-			for(k = 0; k <= 7; k++){
-				print1 = (font8x8[i] & 0x80);
-				print2 = print1 >>7;
+		for(i = 8; i > 0; i--){
+			for(k = 8; k > 0; k--){
+				print1 = font8x8[k-1] >> (i-1);
+				print2 = print1 & 0x01;
+
 				if(print2 == 1){
 					Write_Data(Fcolor);
 				} else {
 					Write_Data(Bcolor);
 				}
-				font8x8[i] = font8x8[i] << 1;
 			}
 		}
 		LCD_CS = 1;
