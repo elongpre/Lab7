@@ -14,6 +14,7 @@
 #include "DAC.h"
 #include "LCD.h"
 #include "Background.h"
+#include "GFX.h"
 
 
 #define PF1   (*((volatile uint32_t *)0x40025008))
@@ -24,22 +25,12 @@ const int32_t Angle[9] = {20,40,60,80,90,100,120,140,160}
 const int32_t X_Diff[9] = {940,766,500,174,0,-174,-500,-766,-940}
 const int32_t Y_Diff[9] = {342,643,866,985,1000,985,866,643,342}
 
-void movePaddle();
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y);
 void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y);
-
+// GFX_Paddle(uint16_t x, uint16_t y, uint16_t option);
 
 uint16_t Game_Play(uint16_t option){
 	//play game
-}
-
-void movePaddle(){
-
-// Potentiometer or computer generated
-// call graphics function for paddle 
-
-	GFX_Paddle(uint16_t x, uint16_t y, uint16_t option);
-
 }
 
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
@@ -56,12 +47,33 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 
 }
 
-void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
+void ballBounce(int32_t angle, uint32_t paddle, int32_t curr_x, int32_t curr_y){
 
 // Paddle Hit location  --> center of ball? it passes if the ball edge won't hit paddle edge (so center is as from away from the paddle corner as the length of the radius)
 // call graphics function for ball
 
+	//Y values of paddle 
+	// uint32_t paddle_top = paddle + (PADDLEH/2);
+	// uint32_t paddle_bottom = paddle - (PADDLEH/2);
 
+
+	if(curr_x == (9 + BALLR)){ 										//if ball edge is flush with left paddle
+
+		//check for passing paddle into goal
+
+	} else if(curr_x == (309 - BALLR)){ 							//if ball edge is flush with left paddle
+
+		//check for passing paddle into goal
+
+	} else if((curr_y == (0 + BALLR))||(curr_y == (239 - BALLR))){ 	//if the ball touches either horizontal edge
+
+		angle = 180 - angle; //flipping the angle
+		ballTrajectory(angle,curr_x,curr_y);
+
+	}
+	
+
+	
 
 	GFX_Ball(uint16_t x, uint16_t y, uint16_t option);
 
