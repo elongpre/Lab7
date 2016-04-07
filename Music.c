@@ -153,7 +153,6 @@ uint32_t BassWav;
 uint32_t TrebleWavLoc;
 uint32_t BassWavLoc;
 
-const uint16_t* SongFile;
 uint16_t SongLoc;
 
 void EnableInterrupts(void);
@@ -170,8 +169,7 @@ void Music_Init(void){
 }
 
 void Music_Play(uint32_t tempo){
-  DAC_Init(song1[0]);
-  SongFile = song1;
+  DAC_Init(song[0]);
   SongLoc = 0;
   Timer0A_Init(20000);  //4000hz music  
 }
@@ -217,17 +215,10 @@ void Timer0A_Init(uint32_t val){
 
 void Timer0A_Handler(void){
 	TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  DAC_Out(SongFile[SongLoc]);
+  DAC_Out((song[SongLoc]+1000)*2);
 
-  if((SongFile==song1)&&(SongLoc==SONGONE)){
-    SongFile = song2;
+  if(SongLoc == SONGLEN){
     SongLoc = 0;
-  } else if((SongFile==song2)&&(SongLoc==SONGTWO)){
-    SongFile = song1;
-    SongLoc = 0;
-  // } else if((SongFile==song3)&&(SongLoc==SONGTHREE)){
-  //   SongFile = song1;
-  //   SongLoc = 0;
   } else {
     SongLoc++;
   }

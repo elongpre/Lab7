@@ -14,6 +14,7 @@ uint16_t Paddle1_Y;
 void GFX_Init(void){
 	Ball_X = 160;
 	Ball_Y = Paddle0_Y = Paddle1_Y = 120;
+	LCD_Init();
 	LCD_Fill(LCD_BLACK);
 }
 void GFX_Background(uint16_t option){
