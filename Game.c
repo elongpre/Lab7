@@ -41,7 +41,7 @@ uint32_t Game_Pause(uint32_t option);
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y);
 // GFX_Paddle(uint16_t x, uint16_t y, uint16_t option);
 
-uint16_t Game_Play(Boolean NewGame, uint16_t option){
+uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 	if(NewGame){
 		Player1 = 0;
 		Player2 = 0;
@@ -54,11 +54,11 @@ uint32_t Game_Pause(uint32_t option){
 	//change score
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
 		char winner[] = "Player1 has won!";
-		LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
+		//LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
 
 	} else if(Player2==5) {
 		char winner[] = "Player2 has won!";
-		LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
+		//LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
 	}
 	else{			//if no one has won yet, keep playing
 		Game_Play(0, 0);
@@ -249,7 +249,7 @@ void Timer1A_Handler(void){
   ADC_In(data);
   GFX_Paddle(0,data[0],0);
   GFX_Paddle(1,data[1],0);
-  
+
 
 }
 
