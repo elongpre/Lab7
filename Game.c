@@ -15,6 +15,7 @@
 #include "LCD.h"
 #include "Background.h"
 #include "GFX.h"
+#include "ADC.h"
 
 
 #define PF1   (*((volatile uint32_t *)0x40025008))
@@ -46,6 +47,7 @@ uint16_t Game_Play(Boolean NewGame, uint16_t option){
 		Player2 = 0;
 	}
 	ballTrajectory(90,159,119);		//play game; start the ball in the middle 
+	Timer1A_Init(4000000);
 }
 
 uint32_t Game_Pause(uint32_t option){
@@ -210,6 +212,44 @@ void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t
 	//x is 0 for left, 1 for right paddle
 	//y is the y value on the axis
 	GFX_Paddle(option, paddle_y, null);
+
+}
+
+void Timer1A_Init(uint32_t val){
+  volatile uint32_t delay;
+
+  if(val == 0){
+    SYSCTL_RCGCTIMER_R &= ~0x02;
+    return;
+  }
+  DisableInterrupts();
+  // **** general initialization ****
+  SYSCTL_RCGCTIMER_R |= 0x02;   // activate timer1
+  delay = SYSCTL_RCGCTIMER_R;       // allow time to finish activating
+  TIMER1_CTL_R &= ~TIMER_CTL_TAEN;  // disable timer1A during setup
+  TIMER1_CFG_R = 0x00000000;                  // configure for 32-bit timer mode
+  // **** timer1A initialization ****
+                                    // configure for periodic mode
+  TIMER1_TAMR_R = TIMER_TAMR_TAMR_PERIOD;
+  TIMER1_TAILR_R = val/WAVEDIV;          // start value 
+  TIMER1_IMR_R |= TIMER_IMR_TATOIM; // enable timeout (rollover) interrupt
+  TIMER1_ICR_R = TIMER_ICR_TATOCINT;// clear timer1A timeout flag
+  TIMER1_CTL_R |= TIMER_CTL_TAEN;   // enable timer1A 16-b, periodic, interrupts
+  // **** interrupt initialization ****
+                                    // Timer1A=priority 4
+  NVIC_PRI5_R = (NVIC_PRI5_R&0xFFFF00FF)|0x00008000; // top 3 bits
+  NVIC_EN0_R = 1<<21;               // enable interrupt 19 in NVIC  
+  EnableInterrupts();
+}
+
+void Timer1A_Handler(void){
+  uint32_t data[2];
+  TIMER1_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer1A timeout
+
+  ADC_In(data);
+  GFX_Paddle(0,data[0],0);
+  GFX_Paddle(1,data[1],0);
+  
 
 }
 
