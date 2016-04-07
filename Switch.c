@@ -43,7 +43,7 @@ void Switch_Init(void){
   	EnableInterrupts();
 }
 
-void GPIOPortE_Handler(void){
+void GPIOPortD_Handler(void){
   if(GPIO_PORTD_RIS_R&0x10){  // poll PE1
     GPIO_PORTD_ICR_R = 0x10;  // acknowledge flag
     LastButton = 1;

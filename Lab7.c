@@ -26,19 +26,10 @@ void Pause(void);
 int main (void){
 	PLL_Init(Bus80MHz);
 	PortF_Init();
-	LCD_Init();
 	GFX_Init();
 	GFX_Paddle(0, 160, 0);
 	GFX_Paddle(1, 200, 0);
 	GFX_Ball(160, 160, 0);
-	DelayWait(1000);
-	GFX_Paddle(0, 170, 0);
-	GFX_Paddle(1, 190, 0);
-	GFX_Ball(180, 180, 0);
-	DelayWait(1000);
-	GFX_Paddle(0, 20, 0);
-	GFX_Paddle(1, 20, 0);
-	GFX_Ball(30, 30, 0);
 	while(1);
 }
 
@@ -127,9 +118,9 @@ void PortF_Init(void){
   GPIO_PORTF_PCTL_R &= ~0x000F0F00; // 3) regular GPIO
   GPIO_PORTF_AMSEL_R &= ~0x16;      // 4) disable analog function on PF2, PF4
   GPIO_PORTF_PUR_R |= 0x10;         // 5) pullup for PF4
-  GPIO_PORTF_DIR_R |= 0x06;         // 5) set direction to output
-  GPIO_PORTF_AFSEL_R &= ~0x16;      // 6) regular port function
+  //GPIO_PORTF_DIR_R |= 0x06;         // 5) set direction to output
+  //GPIO_PORTF_AFSEL_R &= ~0x16;      // 6) regular port function
   GPIO_PORTF_DEN_R |= 0x16;         // 7) enable digital port
-  GPIO_PORTF_PCTL_R = (GPIO_PORTF_PCTL_R&0xFFFFF00F)+0x00000000;
-  GPIO_PORTF_AMSEL_R = 0;               // disable analog functionality on PF
+  //GPIO_PORTF_PCTL_R = (GPIO_PORTF_PCTL_R&0xFFFFF00F)+0x00000000;
+  //GPIO_PORTF_AMSEL_R = 0;               // disable analog functionality on PF
 }

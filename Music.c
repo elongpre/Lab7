@@ -217,7 +217,7 @@ void Timer0A_Init(uint32_t val){
 
 void Timer0A_Handler(void){
 	TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  DAC_Out(SongFile[SongLoc]);
+  DAC_Out((SongFile[SongLoc]+1000)*2);
 
   if((SongFile==song1)&&(SongLoc==SONGONE)){
     SongFile = song2;

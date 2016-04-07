@@ -233,8 +233,8 @@ void Write_Command(uint16_t Wcommand){
 	LCD_RD = 0x20;		//Delay(1);
 	LCD_RS = 0x00;		//Delay(1);
 	GPIO_PORTB_DATA_R = Wcommand & 0x00FF;
-	GPIO_PORTD_DATA_R = (GPIO_PORTD_DATA_R & 0xF0) + ((Wcommand & 0x0F00) >> 8);
-	GPIO_PORTC_DATA_R = (GPIO_PORTC_DATA_R & 0x0F) + ((Wcommand & 0xF000) >> 8);
+	GPIO_PORTE_DATA_R = (GPIO_PORTE_DATA_R & 0x1E) + ((Wcommand & 0x0F00) >> 7);
+	GPIO_PORTF_DATA_R = (GPIO_PORTF_DATA_R & 0x1E) + ((Wcommand & 0xF000) >> 11);
 	LCD_WR = 0x00;		//Delay(1);
 	LCD_WR = 0x10;		//Delay(1);
 }
@@ -243,8 +243,8 @@ void Write_Data(uint16_t Wdata){
 	LCD_RD = 0x20;		//Delay(1);
 	LCD_RS = 0x08;		//Delay(1);
 	GPIO_PORTB_DATA_R = Wdata & 0x00FF;
-	GPIO_PORTD_DATA_R = (GPIO_PORTD_DATA_R & 0xF0) + ((Wdata & 0x0F00) >> 8);
-	GPIO_PORTC_DATA_R = (GPIO_PORTC_DATA_R & 0x0F) + ((Wdata & 0xF000) >> 8);
+	GPIO_PORTE_DATA_R = (GPIO_PORTE_DATA_R & 0x1E) + ((Wdata & 0x0F00) >> 7);
+	GPIO_PORTF_DATA_R = (GPIO_PORTF_DATA_R & 0x1E) + ((Wdata & 0xF000) >> 11);
 	LCD_WR = 0x00;		//Delay(1);
 	LCD_WR = 0x10;		//Delay(1);
 }
@@ -276,11 +276,12 @@ void LCD_Set_Address(uint16_t PX1,uint16_t PY1,uint16_t PX2,uint16_t PY2){
 
 void LCD_Init(void){
 	DisableInterrupts();
-	SYSCTL_RCGCGPIO_R |= 0x0F;
-	while((SYSCTL_PRGPIO_R&0x01)==0){};
+	SYSCTL_RCGCGPIO_R |= 0x33;
+	while((SYSCTL_PRGPIO_R&0x33)!=0x33){};
 
 	GPIO_PORTA_LOCK_R = 0x4C4F434B;   	// unlock
 	GPIO_PORTA_CR_R |= 0xF8;           	// allow changes
+	GPIO_PORTA_PUR_R |= 0xF8;
 	GPIO_PORTA_DIR_R |= 0xF8;			// output
 	GPIO_PORTA_AFSEL_R &= ~0xF8;		// disable alt funct    
 	GPIO_PORTA_DEN_R |= 0xF8;   		// enable digital I/O    
@@ -289,6 +290,7 @@ void LCD_Init(void){
 
 	GPIO_PORTB_LOCK_R = 0x4C4F434B;   	// unlock
 	GPIO_PORTB_CR_R |= 0xFF;           	// allow changes
+	GPIO_PORTB_PUR_R |= 0xFF;
 	GPIO_PORTB_DIR_R |= 0xFF;			// output
 	GPIO_PORTB_AFSEL_R &= ~0xFF;		// disable alt funct    
 	GPIO_PORTB_DEN_R |= 0xFF;   		// enable digital I/O    
@@ -296,76 +298,78 @@ void LCD_Init(void){
 	GPIO_PORTB_AMSEL_R &= ~0xFF;  		// disable analog function
 	GPIO_PORTB_PUR_R |= 0xFF;
 
-	GPIO_PORTC_LOCK_R = 0x4C4F434B;   	// unlock
-	GPIO_PORTC_CR_R |= 0xF0;           	// allow changes
-	GPIO_PORTC_DIR_R |= 0xF0;			// output
-	GPIO_PORTC_AFSEL_R &= ~0xF0;		// disable alt funct    
-	GPIO_PORTC_DEN_R |= 0xF0;   		// enable digital I/O    
-	GPIO_PORTC_PCTL_R &= ~0xFFFF0000; 	// configure as GPIO
-	GPIO_PORTC_AMSEL_R &= ~0xF0;  		// disable analog function
+	GPIO_PORTE_LOCK_R = 0x4C4F434B;   	// unlock
+	GPIO_PORTE_CR_R |= 0x1E;           	// allow changes
+	GPIO_PORTE_PUR_R |= 0x1E;
+	GPIO_PORTE_DIR_R |= 0x1E;			// output
+	GPIO_PORTE_AFSEL_R &= ~0x1E;		// disable alt funct    
+	GPIO_PORTE_DEN_R |= 0x1E;   		// enable digital I/O    
+	GPIO_PORTE_PCTL_R &= ~0x000FFFF0; 	// configure as GPIO
+	GPIO_PORTE_AMSEL_R &= ~0x1E;  		// disable analog function
 
-	GPIO_PORTD_LOCK_R = 0x4C4F434B;   	// unlock
-	GPIO_PORTD_CR_R |= 0x0F;           	// allow changes
-	GPIO_PORTD_DIR_R |= 0x0F;			// output
-	GPIO_PORTD_AFSEL_R &= ~0x0F;		// disable alt funct    
-	GPIO_PORTD_DEN_R |= 0x0F;   		// enable digital I/O    
-	GPIO_PORTD_PCTL_R &= ~0x0000FFFF; 	// configure as GPIO
-	GPIO_PORTD_AMSEL_R &= ~0x0F;  		// disable analog function
+	GPIO_PORTF_LOCK_R = 0x4C4F434B;   	// unlock
+	GPIO_PORTF_CR_R |= 0x1E;           	// allow changes
+	GPIO_PORTF_PUR_R |= 0x1E;
+	GPIO_PORTF_DIR_R |= 0x1E;			// output
+	GPIO_PORTF_AFSEL_R &= ~0x1E;		// disable alt funct    
+	GPIO_PORTF_DEN_R |= 0x1E;   		// enable digital I/O    
+	GPIO_PORTF_PCTL_R &= ~0x000FFFF0; 	// configure as GPIO
+	GPIO_PORTF_AMSEL_R &= ~0x1E;  		// disable analog function
 	EnableInterrupts();
 
-	LCD_RD = 0x20;		//Delay(1);
-	LCD_RST = 0x80;		//Delay(1);
+	LCD_RD = 0x20;		Delay(1);
+	LCD_RST = 0x80;		Delay(1);
 	Delay(5);
-	LCD_RST = 0x00;		//Delay(1);
+	LCD_RST = 0x00;		Delay(1);
 	Delay(15);
-	LCD_RST = 0x80;		//Delay(1);
+	LCD_RST = 0x80;		Delay(1);
 	Delay(15);
-	LCD_CS = 0x00;		//Delay(1);
+	LCD_CS = 0x00;		Delay(1);
 	
-	Write_Command_Data(0x0000,0x0001); //Delay(1);
-	Write_Command_Data(0x0003,0xA8A4); //Delay(1);
-	Write_Command_Data(0x000C,0x0000); //Delay(1);
-	Write_Command_Data(0x000D,0x800C); //Delay(1);
-	Write_Command_Data(0x000E,0x2B00); //Delay(1);
-	Write_Command_Data(0x001E,0x00B7); //Delay(1);
-	Write_Command_Data(0x0001,0x2B3F); //Delay(1);
-	Write_Command_Data(0x0002,0x0600); //Delay(1);
-	Write_Command_Data(0x0010,0x0000); //Delay(1);
-	Write_Command_Data(0x0011,0x6070); //Delay(1);
-	Write_Command_Data(0x0005,0x0000); //Delay(1);
-	Write_Command_Data(0x0006,0x0000); //Delay(1);
-	Write_Command_Data(0x0016,0xEF1C); //Delay(1);
-	Write_Command_Data(0x0017,0x0003); //Delay(1);
-	Write_Command_Data(0x0007,0x0233); //Delay(1);
-	Write_Command_Data(0x000B,0x0000); //Delay(1);
-	Write_Command_Data(0x000F,0x0000); //Delay(1);
-	Write_Command_Data(0x0041,0x0000); //Delay(1);
-	Write_Command_Data(0x0042,0x0000); //Delay(1);
-	Write_Command_Data(0x0048,0x0000); //Delay(1);
-	Write_Command_Data(0x0049,0x013F); //Delay(1);
-	Write_Command_Data(0x004A,0x0000); //Delay(1);
-	Write_Command_Data(0x004B,0x0000); //Delay(1);
-	Write_Command_Data(0x0044,0xEF95); //Delay(1);
-	Write_Command_Data(0x0045,0x0000); //Delay(1);
-	Write_Command_Data(0x0046,0x013F); //Delay(1);
-	Write_Command_Data(0x0030,0x0707); //Delay(1);
-	Write_Command_Data(0x0031,0x0204); //Delay(1);
-	Write_Command_Data(0x0032,0x0204); //Delay(1);
-	Write_Command_Data(0x0033,0x0502); //Delay(1);
-	Write_Command_Data(0x0034,0x0507); //Delay(1);
-	Write_Command_Data(0x0035,0x0204); //Delay(1);
-	Write_Command_Data(0x0036,0x0204); //Delay(1);
-	Write_Command_Data(0x0037,0x0502); //Delay(1);
-	Write_Command_Data(0x003A,0x0302); //Delay(1);
-	Write_Command_Data(0x003B,0x0302); //Delay(1);
-	Write_Command_Data(0x0023,0x0000); //Delay(1);
-	Write_Command_Data(0x0024,0x0000); //Delay(1);
-	Write_Command_Data(0x0025,0x8000); //Delay(1);
-	Write_Command_Data(0x004f,0x0000); //Delay(1);
-	Write_Command_Data(0x004e,0x0000); //Delay(1); 
-	Write_Command(0x0022); //Delay(1);
-	LCD_CS = 0x40;		//Delay(1);
-	LCD_Fill(LCD_BLACK);
+	Write_Command_Data(0x0000,0x0001); Delay(1);
+	Write_Command_Data(0x0003,0xA8A4); Delay(1);
+	Write_Command_Data(0x000C,0x0000); Delay(1);
+	Write_Command_Data(0x000D,0x800C); Delay(1);
+	Write_Command_Data(0x000E,0x2B00); Delay(1);
+	Write_Command_Data(0x001E,0x00B7); Delay(1);
+	Write_Command_Data(0x0001,0x2B3F); Delay(1);
+	Write_Command_Data(0x0002,0x0600); Delay(1);
+	Write_Command_Data(0x0010,0x0000); Delay(1);
+	Write_Command_Data(0x0011,0x6070); Delay(1);
+	Write_Command_Data(0x0005,0x0000); Delay(1);
+	Write_Command_Data(0x0006,0x0000); Delay(1);
+	Write_Command_Data(0x0016,0xEF1C); Delay(1);
+	Write_Command_Data(0x0017,0x0003); Delay(1);
+	Write_Command_Data(0x0007,0x0233); Delay(1);
+	Write_Command_Data(0x000B,0x0000); Delay(1);
+	Write_Command_Data(0x000F,0x0000); Delay(1);
+	Write_Command_Data(0x0041,0x0000); Delay(1);
+	Write_Command_Data(0x0042,0x0000); Delay(1);
+	Write_Command_Data(0x0048,0x0000); Delay(1);
+	Write_Command_Data(0x0049,0x013F); Delay(1);
+	Write_Command_Data(0x004A,0x0000); Delay(1);
+	Write_Command_Data(0x004B,0x0000); Delay(1);
+	Write_Command_Data(0x0044,0xEF95); Delay(1);
+	Write_Command_Data(0x0045,0x0000); Delay(1);
+	Write_Command_Data(0x0046,0x013F); Delay(1);
+	Write_Command_Data(0x0030,0x0707); Delay(1);
+	Write_Command_Data(0x0031,0x0204); Delay(1);
+	Write_Command_Data(0x0032,0x0204); Delay(1);
+	Write_Command_Data(0x0033,0x0502); Delay(1);
+	Write_Command_Data(0x0034,0x0507); Delay(1);
+	Write_Command_Data(0x0035,0x0204); Delay(1);
+	Write_Command_Data(0x0036,0x0204); Delay(1);
+	Write_Command_Data(0x0037,0x0502); Delay(1);
+	Write_Command_Data(0x003A,0x0302); Delay(1);
+	Write_Command_Data(0x003B,0x0302); Delay(1);
+	Write_Command_Data(0x0023,0x0000); Delay(1);
+	Write_Command_Data(0x0024,0x0000); Delay(1);
+	Write_Command_Data(0x0025,0x8000); Delay(1);
+	Write_Command_Data(0x004f,0x0000); Delay(1);
+	Write_Command_Data(0x004e,0x0000); Delay(1); 
+	Write_Command(0x0022); Delay(1);
+	LCD_CS = 0x40;		Delay(1);
+	LCD_Fill(LCD_RED);
 }
 
 
@@ -380,16 +384,16 @@ uint16_t LCD_Color(uint16_t r,uint16_t g,uint16_t b){
 
 void LCD_Fill(uint16_t color){
 	uint16_t i,j;
-	LCD_CS  = 0x00;		
+	LCD_CS  = 0x00;		Delay(1);
 	LCD_Set_Address(0,0,319,239);
 	Write_Data(color);
 	for(i = 0; i <= 239; i++){
 		for(j = 0; j <= 319; j++){
-			LCD_WR = 0x00;
-			LCD_WR = 0x10;
+			LCD_WR = 0x00;	//Delay(1);
+			LCD_WR = 0x10;	//Delay(1);
 		}
 	}
-	LCD_CS = 0x40;		
+	LCD_CS = 0x40;	Delay(1);	
 }
 
 
