@@ -25,6 +25,7 @@ int main (void){
 	uint32_t data[2];
 	uint32_t button, state1, state2;
 	PLL_Init(Bus80MHz);
+	Music_Init();
 	GFX_Init();
 	GFX_Paddle(0, 160, 0);
 	GFX_Paddle(1, 200, 0);
@@ -47,10 +48,10 @@ int main (void){
 			Switch_ResetButton();
 		} else if(button == 2){
 			if(state2 == 1){
-				LCD_Circle(160, 160, 5, 1, LCD_RED);
+				Music_Stop();
 				state2 = 0;
 			} else {
-				LCD_Circle(160, 160, 5, 1, LCD_YELLOW);
+				Music_Play(1);
 				state2 = 1;
 			}
 			Switch_ResetButton();

@@ -176,9 +176,6 @@ void Music_Play(uint32_t tempo){
 
 void Music_Stop(void){
   Timer0A_Init(0);
-  Timer1A_Init(0);
-  Timer2A_Init(0);
-  Timer3A_Halt();
 }
 
 void Music_PlayNote(uint32_t note){

@@ -33,6 +33,10 @@ void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
 	Ball_Y = y;
 }
 
+void GFX_BallDel(void){
+	LCD_Circle(Ball_X, Ball_Y, BALLR, 1, LCD_BLACK);
+}
+
 void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 	uint16_t pad_h = PADDLEH/2;
 	if(x==0){
