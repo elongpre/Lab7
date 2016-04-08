@@ -12,11 +12,9 @@
 #include "ST7735.h"
 #include "DAC.h"
 #include "LCD.h"
+#include "ADC.h"
 #include "GFX.h"
 #include "Song.h"
-
-#define PF1   (*((volatile uint32_t *)0x40025008))
-#define PF4   (*((volatile uint32_t *)0x40025040))
 
 const uint32_t TempoStore[3] = {60, 120, 240};
 void PortF_Init(void);
@@ -24,13 +22,40 @@ void DelayWait(uint32_t X);
 void Pause(void);
 
 int main (void){
+	uint32_t data[2];
+	uint32_t button, state1, state2;
 	PLL_Init(Bus80MHz);
-	PortF_Init();
 	GFX_Init();
 	GFX_Paddle(0, 160, 0);
 	GFX_Paddle(1, 200, 0);
 	GFX_Ball(160, 160, 0);
-	while(1);
+	ADC_Init();
+	Switch_Init();
+	state1 = 0;
+	state2 = 0;
+	while(1){
+		ADC_In(data);
+		button = Switch_GetButton();
+		if(button == 1){
+			if(state1 == 1){
+				LCD_Circle(160, 160, 5, 1, LCD_GREEN);
+				state1 = 0;
+			} else {
+				LCD_Circle(160, 160, 5, 1, LCD_BLUE);
+				state1 = 1;
+			}
+			Switch_ResetButton();
+		} else if(button == 2){
+			if(state2 == 1){
+				LCD_Circle(160, 160, 5, 1, LCD_RED);
+				state2 = 0;
+			} else {
+				LCD_Circle(160, 160, 5, 1, LCD_YELLOW);
+				state2 = 1;
+			}
+			Switch_ResetButton();
+		}
+	}
 }
 
 int mainLab5 (void){
@@ -38,17 +63,13 @@ int mainLab5 (void){
 	uint32_t state = 0; //0 is paused, 1 is playing
 	uint32_t tempo = 1;
 	PLL_Init(Bus80MHz);
-	PortF_Init();
 	Switch_Init();
   	ST7735_InitR(INITR_REDTAB); 
 	
 	ST7735_OutString("Hello\n");
 	while(1){
-		PF1 ^= 0x02;
 		button = Switch_GetButton();
-		PF1 ^= 0x02;
 		if(button == 0){
-			PF1 ^= 0x02;
 			continue;
 		}else if(button == 1){
 			if(state == 0){
@@ -81,19 +102,10 @@ int mainLab5 (void){
 			Music_PlayNote(5682);
 			ST7735_OutString("Play Note: A\n");
 		}
-		PF1 ^= 0x02;
 		Switch_ResetButton();
 	}
 }
 
-void Pause(void){
-  while(PF4==0x00){ 
-    DelayWait(10); 
-  }
-  while(PF4==0x10){
-    DelayWait(10);
-  }
-}
 // Subroutine to wait X msec
 // Inputs: None
 // Outputs: None
@@ -108,19 +120,4 @@ void DelayWait(uint32_t X){
     	}
     	n--;
   	}	
-}
-// PF4 is input
-// Make PF2 an output, enable digital I/O, ensure alt. functions off
-void PortF_Init(void){ 
-  SYSCTL_RCGCGPIO_R |= 0x20;        // 1) activate clock for Port F
-  while((SYSCTL_PRGPIO_R&0x20)==0){}; // allow time for clock to start
-                                    // 2) no need to unlock PF2, PF4
-  GPIO_PORTF_PCTL_R &= ~0x000F0F00; // 3) regular GPIO
-  GPIO_PORTF_AMSEL_R &= ~0x16;      // 4) disable analog function on PF2, PF4
-  GPIO_PORTF_PUR_R |= 0x10;         // 5) pullup for PF4
-  //GPIO_PORTF_DIR_R |= 0x06;         // 5) set direction to output
-  //GPIO_PORTF_AFSEL_R &= ~0x16;      // 6) regular port function
-  GPIO_PORTF_DEN_R |= 0x16;         // 7) enable digital port
-  //GPIO_PORTF_PCTL_R = (GPIO_PORTF_PCTL_R&0xFFFFF00F)+0x00000000;
-  //GPIO_PORTF_AMSEL_R = 0;               // disable analog functionality on PF
 }

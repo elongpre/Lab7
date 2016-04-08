@@ -233,8 +233,8 @@ void Write_Command(uint16_t Wcommand){
 	LCD_RD = 0x20;		//Delay(1);
 	LCD_RS = 0x00;		//Delay(1);
 	GPIO_PORTB_DATA_R = Wcommand & 0x00FF;
-	GPIO_PORTE_DATA_R = (GPIO_PORTE_DATA_R & 0x1E) + ((Wcommand & 0x0F00) >> 7);
-	GPIO_PORTF_DATA_R = (GPIO_PORTF_DATA_R & 0x1E) + ((Wcommand & 0xF000) >> 11);
+	GPIO_PORTE_DATA_R = (GPIO_PORTE_DATA_R & 0xE1) + ((Wcommand & 0x0F00) >> 7);
+	GPIO_PORTF_DATA_R = (GPIO_PORTF_DATA_R & 0xE1) + ((Wcommand & 0xF000) >> 11);
 	LCD_WR = 0x00;		//Delay(1);
 	LCD_WR = 0x10;		//Delay(1);
 }
@@ -243,8 +243,8 @@ void Write_Data(uint16_t Wdata){
 	LCD_RD = 0x20;		//Delay(1);
 	LCD_RS = 0x08;		//Delay(1);
 	GPIO_PORTB_DATA_R = Wdata & 0x00FF;
-	GPIO_PORTE_DATA_R = (GPIO_PORTE_DATA_R & 0x1E) + ((Wdata & 0x0F00) >> 7);
-	GPIO_PORTF_DATA_R = (GPIO_PORTF_DATA_R & 0x1E) + ((Wdata & 0xF000) >> 11);
+	GPIO_PORTE_DATA_R = (GPIO_PORTE_DATA_R & 0xE1) + ((Wdata & 0x0F00) >> 7);
+	GPIO_PORTF_DATA_R = (GPIO_PORTF_DATA_R & 0xE1) + ((Wdata & 0xF000) >> 11);
 	LCD_WR = 0x00;		//Delay(1);
 	LCD_WR = 0x10;		//Delay(1);
 }
@@ -281,7 +281,6 @@ void LCD_Init(void){
 
 	GPIO_PORTA_LOCK_R = 0x4C4F434B;   	// unlock
 	GPIO_PORTA_CR_R |= 0xF8;           	// allow changes
-	GPIO_PORTA_PUR_R |= 0xF8;
 	GPIO_PORTA_DIR_R |= 0xF8;			// output
 	GPIO_PORTA_AFSEL_R &= ~0xF8;		// disable alt funct    
 	GPIO_PORTA_DEN_R |= 0xF8;   		// enable digital I/O    
@@ -290,7 +289,6 @@ void LCD_Init(void){
 
 	GPIO_PORTB_LOCK_R = 0x4C4F434B;   	// unlock
 	GPIO_PORTB_CR_R |= 0xFF;           	// allow changes
-	GPIO_PORTB_PUR_R |= 0xFF;
 	GPIO_PORTB_DIR_R |= 0xFF;			// output
 	GPIO_PORTB_AFSEL_R &= ~0xFF;		// disable alt funct    
 	GPIO_PORTB_DEN_R |= 0xFF;   		// enable digital I/O    
@@ -300,7 +298,6 @@ void LCD_Init(void){
 
 	GPIO_PORTE_LOCK_R = 0x4C4F434B;   	// unlock
 	GPIO_PORTE_CR_R |= 0x1E;           	// allow changes
-	GPIO_PORTE_PUR_R |= 0x1E;
 	GPIO_PORTE_DIR_R |= 0x1E;			// output
 	GPIO_PORTE_AFSEL_R &= ~0x1E;		// disable alt funct    
 	GPIO_PORTE_DEN_R |= 0x1E;   		// enable digital I/O    
@@ -309,7 +306,6 @@ void LCD_Init(void){
 
 	GPIO_PORTF_LOCK_R = 0x4C4F434B;   	// unlock
 	GPIO_PORTF_CR_R |= 0x1E;           	// allow changes
-	GPIO_PORTF_PUR_R |= 0x1E;
 	GPIO_PORTF_DIR_R |= 0x1E;			// output
 	GPIO_PORTF_AFSEL_R &= ~0x1E;		// disable alt funct    
 	GPIO_PORTF_DEN_R |= 0x1E;   		// enable digital I/O    
@@ -384,16 +380,16 @@ uint16_t LCD_Color(uint16_t r,uint16_t g,uint16_t b){
 
 void LCD_Fill(uint16_t color){
 	uint16_t i,j;
-	LCD_CS  = 0x00;		Delay(1);
+	LCD_CS  = 0x00;
 	LCD_Set_Address(0,0,319,239);
 	Write_Data(color);
 	for(i = 0; i <= 239; i++){
 		for(j = 0; j <= 319; j++){
-			LCD_WR = 0x00;	//Delay(1);
-			LCD_WR = 0x10;	//Delay(1);
+			LCD_WR = 0x00;
+			LCD_WR = 0x10;
 		}
 	}
-	LCD_CS = 0x40;	Delay(1);	
+	LCD_CS = 0x40;	
 }
 
 
