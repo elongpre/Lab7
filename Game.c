@@ -17,10 +17,6 @@
 #include "GFX.h"
 #include "ADC.h"
 
-
-#define PF1   (*((volatile uint32_t *)0x40025008))
-#define PF4   (*((volatile uint32_t *)0x40025040))
-
 const uint32_t PlayerMode[3] = {0, 1, 2}; //Mode 0 is demo mode, Mode 1 is Computer vs. Human, and Mode 2 is Human vs. Human
 // const int32_t Angle[9] = {20,40,60,80,90,100,120,140,160}
 // const int32_t X_Diff[9] = {940,766,500,174,0,-174,-500,-766,-940}
@@ -36,33 +32,38 @@ uint32_t Player2;		//right
 uint32_t Paddle;		//which paddle was previously hit; left is 0, right is 1
 
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y);
-void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y);
+void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t curr_y);
 uint32_t Game_Pause(uint32_t option);
-void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y);
+void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option);
+void Timer1A_Init(uint32_t val);
+void Timer1A_Handler(void);
+void EnableInterrupts(void);
+void DisableInterrupts(void);
+
 // GFX_Paddle(uint16_t x, uint16_t y, uint16_t option);
 
-uint16_t Game_Play(Boolean NewGame, uint16_t option){
+uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 	if(NewGame){
 		Player1 = 0;
 		Player2 = 0;
 	}
 	ballTrajectory(90,159,119);		//play game; start the ball in the middle 
 	Timer1A_Init(4000000);
+	return 1;
 }
 
 uint32_t Game_Pause(uint32_t option){
 	//change score
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
-		char winner[] = "Player1 has won!";
-		LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
+		LCD_Text("Player1 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 
 	} else if(Player2==5) {
-		char winner[] = "Player2 has won!";
-		LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
+		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 	}
 	else{			//if no one has won yet, keep playing
 		Game_Play(0, 0);
 	}
+	return 1;
 }
 
 // left paddle is 0, right paddle is 1
@@ -74,7 +75,7 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 
 	if(Paddle==0){
 		for(i=0;i<9;i++){
-			if Angle1[i] == angle {
+			if (Angle1[i] == angle) {
 			j = i;
 			}
 		}
@@ -82,7 +83,7 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 		new_x = (curr_x*1000 + X_Diff1[j])/1000;
 	} else {
 		for(i=0;i<9;i++){
-			if Angle2[i] == angle {
+			if (Angle2[i] == angle) {
 				j = i;
 			}
 		}
@@ -103,7 +104,7 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 			if(index > 12){
 				//ball keeps moving; left teams loses, so right team gets a point!
 			} else {
-				ballTrajectory(Angle1[index],0,curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle1[index],curr_x,curr_y);			//bounce!
 			}
 			
 
@@ -112,7 +113,7 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 			if(index < 0){
 				//ball keeps moving; left team loses, so right team gets a point!
 			} else {
-				ballTrajectory(Angle1[index],0,curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle1[index],curr_x,curr_y);			//bounce!
 			}
 			
 		}
@@ -126,14 +127,14 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 			if(index > 12){
 				//ball keeps moving; right team loses, so left team gets a point!
 			} else {
-				ballTrajectory(Angle2[index],1,curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
 			}
 		} else {
 			int32_t index = (((paddle_center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot; rounding
 			if(index < 0){
 				//ball keeps moving; right team loses, so left team gets a point!
 			} else {
-				ballTrajectory(Angle2[index],1,curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
 			}
 		}
 
@@ -142,7 +143,7 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 		int32_t index;
 		if(Paddle==0){
 			for(i=0;i<9;i++){
-				if Angle1[i] == angle {
+				if (Angle1[i] == angle) {
 					j = i;
 				}
 			}
@@ -153,7 +154,7 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 			angle = Angle1[index];
 		} else {
 			for(i=0;i<9;i++){
-				if Angle2[i] == angle {
+				if (Angle2[i] == angle) {
 					j = i;
 				}
 			}
@@ -169,12 +170,12 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 	} else if(curr_x == (0 + BALLR)){	//if the ball touches either vertical side, the ball should go off the screen
 		//TODO: make the ball go off the screen
 		Player2++;			//Player2 scores!
-		Game_Pause(); 
+		Game_Pause(0); 
 
 	} else if(curr_x == (319 - BALLR)){	//if the ball touches either vertical side, the ball should go off the screen
 		//TODO: make the ball go off the screen
 		Player1++;			//Player1 scores!
-		Game_Pause(); 
+		Game_Pause(0); 
 	}
 }
 
@@ -185,20 +186,20 @@ void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t
 
 	if(Paddle==0){
 		for(i=0;i<9;i++){
-			if Angle1[i] == angle {
+			if (Angle1[i] == angle) {
 				j = i;
 			}
 		}
-		y = (curr_y*1000 + Y_Diff1[j]);
-		x = (curr_x*1000 + X_Diff1[j]);
+		y = (ball_y*1000 + Y_Diff1[j]);
+		x = (ball_x*1000 + X_Diff1[j]);
 	} else{
 		for(i=0;i<9;i++){
-			if Angle2[i] == angle {
+			if (Angle2[i] == angle) {
 				j = i;
 			}
 		}
-		y = (curr_y*1000 + Y_Diff2[j]);
-		x = (curr_x*1000 + X_Diff2[j]);
+		y = (ball_y*1000 + Y_Diff2[j]);
+		x = (ball_x*1000 + X_Diff2[j]);
 	}
 
 	if(option == 0){									//if the left paddle is controlled by AI
@@ -211,7 +212,7 @@ void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t
 
 	//x is 0 for left, 1 for right paddle
 	//y is the y value on the axis
-	GFX_Paddle(option, paddle_y, null);
+	GFX_Paddle(option, paddle_y, 0);
 
 }
 
@@ -231,7 +232,7 @@ void Timer1A_Init(uint32_t val){
   // **** timer1A initialization ****
                                     // configure for periodic mode
   TIMER1_TAMR_R = TIMER_TAMR_TAMR_PERIOD;
-  TIMER1_TAILR_R = val/WAVEDIV;          // start value 
+  TIMER1_TAILR_R = val;          // start value 
   TIMER1_IMR_R |= TIMER_IMR_TATOIM; // enable timeout (rollover) interrupt
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;// clear timer1A timeout flag
   TIMER1_CTL_R |= TIMER_CTL_TAEN;   // enable timer1A 16-b, periodic, interrupts

@@ -25,7 +25,6 @@ int main (void){
 	uint32_t data[2];
 	uint32_t button, state1, state2;
 	PLL_Init(Bus80MHz);
-	Music_Init();
 	GFX_Init();
 	GFX_Paddle(0, 160, 0);
 	GFX_Paddle(1, 200, 0);
@@ -56,54 +55,6 @@ int main (void){
 			}
 			Switch_ResetButton();
 		}
-	}
-}
-
-int mainLab5 (void){
-	uint32_t button;
-	uint32_t state = 0; //0 is paused, 1 is playing
-	uint32_t tempo = 1;
-	PLL_Init(Bus80MHz);
-	Switch_Init();
-  	ST7735_InitR(INITR_REDTAB); 
-	
-	ST7735_OutString("Hello\n");
-	while(1){
-		button = Switch_GetButton();
-		if(button == 0){
-			continue;
-		}else if(button == 1){
-			if(state == 0){
-				Music_Play(TempoStore[tempo]);
-				state = 1;
-				ST7735_OutString("Play Music\n");
-			} else {
-				Music_Stop();
-				state = 0;
-				ST7735_OutString("Pause Music\n");
-			}
-		} else if(button == 2){
-			Music_Stop();
-			Music_Init();
-			Music_Play(TempoStore[tempo]);
-			state = 1;
-			ST7735_OutString("Rewind and Play Music\n");
-		} else if(button == 3){
-			if(tempo == 2){
-				tempo = 0;
-			} else {
-				tempo++;
-			}
-			Music_Stop();
-			Music_Play(TempoStore[tempo]);
-			ST7735_OutString("Change Tempo\n");
-		} else if(button == 4){
-			Music_Stop();
-			state = 0;
-			Music_PlayNote(5682);
-			ST7735_OutString("Play Note: A\n");
-		}
-		Switch_ResetButton();
 	}
 }
 
