@@ -41,5 +41,9 @@ void ADC_In(uint32_t data[2]){
   while((ADC0_RIS_R&0x04)==0){};   // 2) wait for conversion done
   data[1] = ADC0_SSFIFO2_R&0xFFF;  // 3A) read first result
   data[0] = ADC0_SSFIFO2_R&0xFFF;  // 3B) read second result
+
+  data[1] = data[1]/(4096/240);    // Convert ADC values to scale 
+  data[0] = data[0]/(4096/240);    // to the LCD Screen
+
   ADC0_ISC_R = 0x0004;             // 4) acknowledge completion
 }
