@@ -15,6 +15,7 @@
 #include "ADC.h"
 #include "GFX.h"
 #include "Song.h"
+#include "Game.h"
 
 const uint32_t TempoStore[3] = {60, 120, 240};
 void PortF_Init(void);
@@ -26,15 +27,15 @@ int main (void){
 	uint32_t button, state1, state2;
 	PLL_Init(Bus80MHz);
 	GFX_Init();
-	GFX_Paddle(0, 160, 0);
+	GFX_Paddle(0, 220, 0);
 	GFX_Paddle(1, 200, 0);
 	GFX_Ball(160, 160, 0);
+	Game_Play(0, 0);
 	ADC_Init();
 	Switch_Init();
 	state1 = 0;
 	state2 = 0;
 	while(1){
-		ADC_In(data);
 		button = Switch_GetButton();
 		if(button == 1){
 			if(state1 == 1){

@@ -393,8 +393,23 @@ void LCD_Fill(uint16_t color){
 }
 
 
-void LCD_Box(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2,uint16_t color){
+void LCD_Box(uint16_t xin1,uint16_t yin1,uint16_t xin2,uint16_t yin2,uint16_t color){
 	uint16_t  i,j;
+	uint16_t x1, y1, x2, y2;
+	if(xin1<=xin2){
+		x1 = xin1;
+		x2 = xin2;
+	} else {
+		x1 = xin2;
+		x2 = xin1;
+	}
+	if(yin1<=yin2){
+		y1 = yin1;
+		y2 = yin2;
+	} else {
+		y1 = yin2;
+		y2 = yin1;
+	}
 	LCD_CS  = 0x00;		
 	LCD_Set_Address(x1,y1,x2,y2);
 	Write_Data(color);
