@@ -34,7 +34,7 @@ void GFX_Background(uint16_t option){
 	}
 }
 
-void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
+void GFX_OldBall(uint16_t x, uint16_t y, uint16_t option){
 	LCD_Circle(Ball_X, Ball_Y, BALLR, 1, LCD_BLACK);
 	LCD_Circle(x, y, BALLR, 1, LCD_RED);
 
@@ -42,8 +42,51 @@ void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
 	Ball_Y = y;
 }
 
+void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
+	uint16_t Lcolor, Dcolor;
+	LCD_Box(Ball_X-4, Ball_Y-4, Ball_X+4, Ball_Y-4, LCD_BLACK);
+	if(option == 0){
+		Dcolor = DTUR;
+		Lcolor = LTUR;
+	} else {
+		Dcolor = DRED;
+		Lcolor = LRED;
+	}
+	LCD_Box(x-1, y+4, x+1, y+2, Dcolor);
+	LCD_Box(x-1, y-4, x+1, y-2, Dcolor);
+	LCD_Box(x+4, y-1, x+2, y+1, Dcolor);
+	LCD_Box(x-4, y-1, x-2, y+1, Dcolor);
+	LCD_Dot(x-1, y-1, Dcolor);
+	LCD_Dot(x-1, y+1, Dcolor);
+	LCD_Dot(x+1, y-1, Dcolor);
+	LCD_Dot(x+1, y+1, Dcolor);
+	LCD_Dot(x-3, y-2, Dcolor);
+	LCD_Dot(x-3, y+2, Dcolor);
+	LCD_Dot(x+3, y-2, Dcolor);
+	LCD_Dot(x+3, y+2, Dcolor);
+	LCD_Dot(x-2, y-3, Dcolor);
+	LCD_Dot(x-2, y+3, Dcolor);
+	LCD_Dot(x+2, y-3, Dcolor);
+	LCD_Dot(x+2, y+3, Dcolor);
+	LCD_Box(x-1, y+3, x+1, y+3, Lcolor);	
+	LCD_Box(x-1, y-3, x+1, y-3, Lcolor);
+	LCD_Box(x+3, y-1, x+3, y+1, Lcolor);
+	LCD_Box(x-3, y-1, x-3, y+1, Lcolor);
+	LCD_Box(x-2, y+2, x-1, y+2, Lcolor);	
+	LCD_Box(x-2, y-2, x-1, y-2, Lcolor);
+	LCD_Box(x+2, y+2, x+1, y+2, Lcolor);	
+	LCD_Box(x+2, y-2, x+1, y-2, Lcolor);
+	LCD_Dot(x-2, y-1, Lcolor);
+	LCD_Dot(x-2, y+1, Lcolor);
+	LCD_Dot(x+2, y-1, Lcolor);
+	LCD_Dot(x+2, y+1, Lcolor);
+	Ball_X = x;
+	Ball_Y = y;
+}
+
+
 void GFX_BallDel(void){
-	LCD_Circle(Ball_X, Ball_Y, BALLR, 1, LCD_BLACK);
+	LCD_Box(Ball_X-4, Ball_Y-4, Ball_X+4, Ball_Y-4, LCD_BLACK);
 }
 
 void GFX_OldPaddle(uint16_t x, uint16_t y, uint16_t option){

@@ -30,7 +30,7 @@ int main (void){
 	GFX_Paddle(0, 220, 0);
 	GFX_Paddle(1, 200, 0);
 	GFX_Ball(160, 160, 0);
-	Game_Play(0, 0);
+	//Game_Play(0, 0);
 	ADC_Init();
 	Switch_Init();
 	state1 = 0;
@@ -39,10 +39,10 @@ int main (void){
 		button = Switch_GetButton();
 		if(button == 1){
 			if(state1 == 1){
-				LCD_Circle(160, 160, 5, 1, LCD_GREEN);
+				GFX_Ball(160, 160, 0);
 				state1 = 0;
 			} else {
-				LCD_Circle(160, 160, 5, 1, LCD_BLUE);
+				GFX_Ball(160, 160, 1);
 				state1 = 1;
 			}
 			Switch_ResetButton();

@@ -371,9 +371,9 @@ void LCD_Init(void){
 
 uint16_t LCD_Color(uint16_t r,uint16_t g,uint16_t b){
 	uint16_t temp;
-	temp = r & 0x001F;
+	temp = b & 0x001F;
 	temp |= (g & 0x003F) << 5; 
-	temp |= (b & 0x001F) << 11;
+	temp |= (r & 0x001F) << 11;
 	return temp;
 }
 
