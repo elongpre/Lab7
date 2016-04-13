@@ -2,26 +2,13 @@
 #include "Background.h"
 #include "LCD.h"
 
-#define LTUR 	0xC61E
-#define DTUR	0x529A
-#define LRED	0xF618
-#define DRED	0xD28A
-#define GRY		0x4204
-#define LGRY	0x7388
-#define DGRY	0x2102
-
-#define PADDLEH	39	
-#define PADDLEW	5
-#define PADDLEF	5
-#define BALLR 	5
-
-uint16_t Ball_X, Ball_Y;
-uint16_t Paddle0_Y;
-uint16_t Paddle1_Y;
+uint16_t GFX_Ball_X, GFX_Ball_Y;
+uint16_t GFX_Pad0_Y;
+uint16_t GFX_Pad1_Y;
 
 void GFX_Init(void){
-	Ball_X = 160;
-	Ball_Y = Paddle0_Y = Paddle1_Y = 120;
+	GFX_Ball_X = 160;
+	GFX_Ball_Y = GFX_Pad0_Y = GFX_Pad1_Y = 120;
 	LCD_Init();
 	LCD_Fill(LCD_BLACK);
 }
@@ -34,17 +21,9 @@ void GFX_Background(uint16_t option){
 	}
 }
 
-void GFX_OldBall(uint16_t x, uint16_t y, uint16_t option){
-	LCD_Circle(Ball_X, Ball_Y, BALLR, 1, LCD_BLACK);
-	LCD_Circle(x, y, BALLR, 1, LCD_RED);
-
-	Ball_X = x;
-	Ball_Y = y;
-}
-
 void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
 	uint16_t Lcolor, Dcolor;
-	LCD_Box(Ball_X-4, Ball_Y-4, Ball_X+4, Ball_Y-4, LCD_BLACK);
+	LCD_Box(GFX_Ball_X-4, GFX_Ball_Y-4, GFX_Ball_X+4, GFX_Ball_Y-4, LCD_BLACK);
 	if(option == 0){
 		Dcolor = DTUR;
 		Lcolor = LTUR;
@@ -80,35 +59,13 @@ void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
 	LCD_Dot(x-2, y+1, Lcolor);
 	LCD_Dot(x+2, y-1, Lcolor);
 	LCD_Dot(x+2, y+1, Lcolor);
-	Ball_X = x;
-	Ball_Y = y;
+	GFX_Ball_X = x;
+	GFX_Ball_Y = y;
 }
 
 
 void GFX_BallDel(void){
-	LCD_Box(Ball_X-4, Ball_Y-4, Ball_X+4, Ball_Y-4, LCD_BLACK);
-}
-
-void GFX_OldPaddle(uint16_t x, uint16_t y, uint16_t option){
-	uint16_t pad_h = PADDLEH/2;
-
-	if(x==0){
-		if(y>Paddle0_Y){
-			LCD_Box(PADDLEF, Paddle0_Y-pad_h, PADDLEF+PADDLEW, y-pad_h, LCD_BLACK);
-		} else {
-			LCD_Box(PADDLEF, y+pad_h, PADDLEF+PADDLEW, Paddle0_Y+pad_h, LCD_BLACK);
-		}
-		LCD_Box(PADDLEF, y-pad_h, PADDLEF+PADDLEW, y+pad_h, LCD_RED);
-		Paddle0_Y = y;
-	} else {
-		if(y>Paddle1_Y){
-			LCD_Box(320-PADDLEF-PADDLEW, Paddle1_Y-pad_h, 320-PADDLEF, y-pad_h, LCD_BLACK);
-		} else {
-			LCD_Box(320-PADDLEF-PADDLEW, y+pad_h, 320-PADDLEF, Paddle1_Y+pad_h, LCD_BLACK);
-		}
-		LCD_Box(320-PADDLEF-PADDLEW, y-pad_h, 320-PADDLEF, y+pad_h, LCD_RED);
-		Paddle1_Y = y;
-	}
+	LCD_Box(GFX_Ball_X-4, GFX_Ball_Y-4, GFX_Ball_X+4, GFX_Ball_Y-4, LCD_BLACK);
 }
 
 void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
@@ -116,7 +73,7 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 	uint16_t pad_h = PADDLEH/2;
 	uint16_t top = y+pad_h;
 	if(x==0){
-		LCD_Box(0, Paddle0_Y+pad_h, 15, Paddle0_Y-pad_h, LCD_BLACK);
+		LCD_Box(0, GFX_Pad0_Y+pad_h, 15, GFX_Pad0_Y-pad_h, LCD_BLACK);
 		xline = 15;
 		LCD_Box(xline, top-1, xline, top-37, DTUR);		//1
 		xline--;
@@ -159,9 +116,9 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 		LCD_Dot(xline, top-23, DGRY);
 		xline--;
 		LCD_Box(xline, top-17, xline, top-21, GRY);
-		Paddle0_Y = y;
+		GFX_Pad0_Y = y;
 	} else {
-		LCD_Box(319, Paddle1_Y+pad_h, 304, Paddle1_Y-pad_h, LCD_BLACK);
+		LCD_Box(319, GFX_Pad1_Y+pad_h, 304, GFX_Pad1_Y-pad_h, LCD_BLACK);
 		xline = 304;
 		LCD_Box(xline, top-1, xline, top-37, DRED);		//1
 		xline++;
@@ -204,7 +161,7 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 		LCD_Dot(xline, top-23, DGRY);
 		xline++;
 		LCD_Box(xline, top-17, xline, top-21, GRY);
-		Paddle1_Y = y;
+		GFX_Pad1_Y = y;
 
 	}
 
