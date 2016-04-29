@@ -22,18 +22,24 @@ const uint32_t PlayerMode[3] = {0, 1, 2}; //Mode 0 is demo mode, Mode 1 is Compu
 // const int32_t X_Diff[9] = {940,766,500,174,0,-174,-500,-766,-940}
 // const int32_t Y_Diff[9] = {342,643,866,985,1000,985,866,643,342}
 const int32_t Angle1[13] = {60,50,40,30,20,10,0,350,340,330,320,310,300};
-const int32_t X_Diff1[13] = {500,643,766,866,940,985,1000,985,940,866,766,643,500};
+const int32_t X_Diff1[13] = {500,643,766,866,940,985,1000,985,940,866,766,643,500};					//differentials based on the angle
 const int32_t Y_Diff1[13] = {866,766,643,500,342,174,0,-174,-342,-500,-643,-766,-866};
 const int32_t Angle2[13] = {120,130,140,150,160,170,180,190,200,210,220,230,240};
 const int32_t X_Diff2[13] = {-500,-643,-766,-866,-940,-985-1000,-985,-940,-866,-766,-643,-500};
 const int32_t Y_Diff2[13] = {866,766,643,500,342,174,0,-174,-342,-500,-643,-766,-866};
-uint32_t Player1;		//left
-uint32_t Player2;		//right
+uint32_t Player1;		//left; current score
+uint32_t Player2;		//right; current score
 uint32_t Paddle;		//which paddle was previously hit; left is 0, right is 1
+uint32_t Paddle1_Center;	//current center of paddle
+uint32_t Paddle2_Center;	//current center of paddle
+uint32_t Ball_X;		
+uint32_t Ball_Y;
+uint32_t Ball_Angle;
+uint32_t Ball_Direction; //the direction in which the is currently moving. 0 is moving to the right; 1 is moving to the left
 
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y);
 void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t curr_y);
-uint32_t Game_Pause(uint32_t option);
+uint32_t Game_Score(uint32_t option);
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option);
 void Timer1A_Init(uint32_t val);
 void Timer1A_Handler(void);
@@ -46,22 +52,36 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 	if(NewGame){
 		Player1 = 0;
 		Player2 = 0;
+		Paddle1_Center = Paddle0_Y;
+		Paddle2_Center = Paddle1_Y;
+		Ball_Angle = 90;
+		Ball_X = 159;
+		Ball_Y = 119;
+		Timer1A_Init(4000000);
 	}
-	ballTrajectory(90,159,119);		//play game; start the ball in the middle 
-	Timer1A_Init(4000000);
+	ballTrajectory(Ball_Angle,Ball_X,Ball_Y);		//play game; start the ball in the middle 
 	return 1;
 }
 
-uint32_t Game_Pause(uint32_t option){
+uint32_t Game_Score(uint32_t option){
 	//change score
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
+<<<<<<< HEAD
 		LCD_Text("Player1 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 
 	} else if(Player2==5) {
 		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
+=======
+		char winner[] = "Player1 has won!";
+		//LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
+
+	} else if(Player2==5) {
+		char winner[] = "Player2 has won!";
+		//LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
+>>>>>>> 54e26fc9f97f741877ac39bcf8b856ed8dde0b82
 	}
 	else{			//if no one has won yet, keep playing
-		Game_Play(0, 0);
+		Game_Play(1, 0);	//start a new round
 	}
 	return 1;
 }
@@ -73,47 +93,58 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 	int32_t new_y;
 	int32_t new_x;
 
-	if(Paddle==0){
-		for(i=0;i<9;i++){
-			if (Angle1[i] == angle) {
-			j = i;
-			}
-		}
-		new_y = (curr_y*1000 + Y_Diff1[j])/1000;
-		new_x = (curr_x*1000 + X_Diff1[j])/1000;
+	if(Ball_Direction==0){
+		// for(i=0;i<9;i++){ //just store the angle as the index?
+		// 	if (Angle1[i] == angle) {
+		// 	j = i;
+		// 	}
+		// }
+		new_y = (curr_y*1000 + Y_Diff1[Ball_Angle])/1000;	//calculate the new coordinates based on the differentials
+		new_x = (curr_x*1000 + X_Diff1[Ball_Angle])/1000;
 	} else {
-		for(i=0;i<9;i++){
-			if (Angle2[i] == angle) {
-				j = i;
-			}
-		}
-		new_y = (curr_y*1000 + Y_Diff2[j])/1000;
-		new_x = (curr_x*1000 + X_Diff2[j])/1000;
+		// for(i=0;i<9;i++){
+		// 	if (Angle2[i] == angle) {
+		// 		j = i;
+		// 	}
+		// }
+		new_y = (curr_y*1000 + Y_Diff2[Ball_Angle])/1000;
+		new_x = (curr_x*1000 + X_Diff2[Ball_Angle])/1000;
 	}
 
 	GFX_Ball(new_x, new_y, 0);
 }
 
-void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t curr_y){
+void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
+	//Update paddle centers
+	Paddle1_Center = Paddle0_Y;
+	Paddle2_Center = Paddle1_Y;
 
 	if(curr_x == (9 + BALLR)){ 										//if ball edge is flush with left paddle
 
-		if(curr_y > paddle_center){
+		if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
 
-			uint32_t index = ((((curr_y*1000 - paddle_center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot
+			uint32_t index = ((((curr_y*1000 - Paddle1_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot
+			Ball_Angle = index;											//set the new ball angle
+			Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
 			if(index > 12){
 				//ball keeps moving; left teams loses, so right team gets a point!
+				Player2++;
+				Game_Score(0);
 			} else {
-				ballTrajectory(Angle1[index],curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 			
 
-		} else {
-			int32_t index = (((paddle_center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot
+		} else {													//if the ball is at or below the center of the paddle
+			int32_t index = (((Paddle1_Center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot
+			Ball_Angle = index;										//set the new ball angle
+			Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
 			if(index < 0){
 				//ball keeps moving; left team loses, so right team gets a point!
+				Player2++;
+				Game_Score(0);
 			} else {
-				ballTrajectory(Angle1[index],curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 			
 		}
@@ -121,61 +152,73 @@ void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t c
 
 	} else if(curr_x == (309 - BALLR)){ 							//if ball edge is flush with right paddle
 
-		if(curr_y > paddle_center){
+		if(curr_y > Paddle2_Center){								//if the ball is above the center of the paddle
 
-			uint32_t index = ((((curr_y*1000 - paddle_center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot; rounding
+			uint32_t index = ((((curr_y*1000 - Paddle2_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot; rounding
+			Ball_Angle = index;										//set the new ball angle
+			Ball_Direction = 1;											//switch the direction of the ball to moving to the left		
 			if(index > 12){
 				//ball keeps moving; right team loses, so left team gets a point!
+				Player1++;
+				Game_Score(0);
 			} else {
 				ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
 			}
-		} else {
-			int32_t index = (((paddle_center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot; rounding
+		} else {													//if the ball is at or below the center of the paddle
+			int32_t index = (((Paddle2_Center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot; rounding
+			Ball_Angle = index;										//set the new ball angle
+			Ball_Direction = 1;											//switch the direction of the ball to moving to the left	
 			if(index < 0){
 				//ball keeps moving; right team loses, so left team gets a point!
+				Player1++;
+				Game_Score(0);
 			} else {
-				ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
+				ballTrajectory(Angle2[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 		}
 
 	} else if((curr_y == (0 + BALLR))||(curr_y == (239 - BALLR))){ 	//if the ball touches either horizontal edge
 		uint32_t i, j;
 		int32_t index;
-		if(Paddle==0){
-			for(i=0;i<9;i++){
-				if (Angle1[i] == angle) {
-					j = i;
-				}
-			}
-			index = j - 12;
-			if(index<0){
-				index = index*(-1);
-			}
-			angle = Angle1[index];
-		} else {
-			for(i=0;i<9;i++){
-				if (Angle2[i] == angle) {
-					j = i;
-				}
-			}
-			index = j - 12;
-			if(index<0){
-				index = index*(-1);
-			}
-			angle = Angle2[index];
+		// if(Paddle==0){
+		// 	for(i=0;i<9;i++){
+		// 		if (Angle1[i] == angle) {
+		// 			j = i;
+		// 		}
+		// 	}
+		// 	index = j - 12;
+		// 	if(index<0){
+		// 		index = index*(-1);
+		// 	}
+		// 	angle = Angle1[index];
+		// } else {
+		// 	for(i=0;i<9;i++){
+		// 		if (Angle2[i] == angle) {
+		// 			j = i;
+		// 		}
+		// 	}
+		// 	index = j - 12;
+		// 	if(index<0){
+		// 		index = index*(-1);
+		// 	}
+		// 	angle = Angle2[index];
+		// }
+		index = j - 12;
+		if(index<0){
+			index = index*(-1);
 		}
-		// angle = 180 - angle; //flip the angle
-		ballTrajectory(angle,curr_x,curr_y);
+		Ball_Angle = index;
+		ballTrajectory(Ball_Angle,curr_x,curr_y);
 
-	} else if(curr_x == (0 + BALLR)){	//if the ball touches either vertical side, the ball should go off the screen
+	} else if(curr_x == (0 + BALLR)){	//if the ball touches the left side, the ball should go off the screen
 		//TODO: make the ball go off the screen
 		Player2++;			//Player2 scores!
-		Game_Pause(0); 
+		Game_Score(0); 
 
-	} else if(curr_x == (319 - BALLR)){	//if the ball touches either vertical side, the ball should go off the screen
+	} else if(curr_x == (319 - BALLR)){	//if the ball touches the right side, the ball should go off the screen
 		//TODO: make the ball go off the screen
 		Player1++;			//Player1 scores!
-		Game_Pause(0); 
+		Game_Score(0); 
 	}
 }
 
@@ -185,21 +228,21 @@ void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t
 	int32_t y, x, b;
 
 	if(Paddle==0){
-		for(i=0;i<9;i++){
-			if (Angle1[i] == angle) {
-				j = i;
-			}
-		}
-		y = (ball_y*1000 + Y_Diff1[j]);
-		x = (ball_x*1000 + X_Diff1[j]);
+		// for(i=0;i<9;i++){
+		// 	if (Angle1[i] == angle) {
+		// 		j = i;
+		// 	}
+		// }
+		y = (ball_y*1000 + Y_Diff1[Ball_Angle]);
+		x = (ball_x*1000 + X_Diff1[Ball_Angle]);
 	} else{
-		for(i=0;i<9;i++){
-			if (Angle2[i] == angle) {
-				j = i;
-			}
-		}
-		y = (ball_y*1000 + Y_Diff2[j]);
-		x = (ball_x*1000 + X_Diff2[j]);
+		// for(i=0;i<9;i++){
+		// 	if (Angle2[i] == angle) {
+		// 		j = i;
+		// 	}
+		// }
+		y = (ball_y*1000 + Y_Diff2[Ball_Angle]);
+		x = (ball_x*1000 + X_Diff2[Ball_Angle]);
 	}
 
 	if(option == 0){									//if the left paddle is controlled by AI
@@ -250,7 +293,7 @@ void Timer1A_Handler(void){
   ADC_In(data);
   GFX_Paddle(0,data[0],0);
   GFX_Paddle(1,data[1],0);
-  
+
 
 }
 
