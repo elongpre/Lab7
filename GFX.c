@@ -23,7 +23,10 @@ void GFX_Background(uint16_t option){
 
 void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
 	uint16_t Lcolor, Dcolor;
-	LCD_Box(GFX_Ball_X-4, GFX_Ball_Y-4, GFX_Ball_X+4, GFX_Ball_Y-4, LCD_BLACK);
+	if((x<4)||(y<4)||(x>315)||(y>235)){
+		return;
+	}
+	LCD_Box(GFX_Ball_X-4, GFX_Ball_Y-4, GFX_Ball_X+4, GFX_Ball_Y+4, LCD_BLACK);
 	if(option == 0){
 		Dcolor = DTUR;
 		Lcolor = LTUR;
@@ -65,13 +68,16 @@ void GFX_Ball(uint16_t x, uint16_t y, uint16_t option){
 
 
 void GFX_BallDel(void){
-	LCD_Box(GFX_Ball_X-4, GFX_Ball_Y-4, GFX_Ball_X+4, GFX_Ball_Y-4, LCD_BLACK);
+	LCD_Box(GFX_Ball_X-4, GFX_Ball_Y-4, GFX_Ball_X+4, GFX_Ball_Y+4, LCD_BLACK);
 }
 
 void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 	uint16_t xline;
 	uint16_t pad_h = PADDLEH/2;
 	uint16_t top = y+pad_h;
+	if((y>(239-pad_h))||(y<pad_h)){
+		return;
+	}
 	if(x==0){
 		LCD_Box(0, GFX_Pad0_Y+pad_h, 15, GFX_Pad0_Y-pad_h, LCD_BLACK);
 		xline = 15;
