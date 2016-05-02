@@ -371,9 +371,9 @@ void LCD_Init(void){
 
 uint16_t LCD_Color(uint16_t r,uint16_t g,uint16_t b){
 	uint16_t temp;
-	temp = r & 0x001F;
+	temp = b & 0x001F;
 	temp |= (g & 0x003F) << 5; 
-	temp |= (b & 0x001F) << 11;
+	temp |= (r & 0x001F) << 11;
 	return temp;
 }
 
@@ -547,9 +547,9 @@ void LCD_Char(char C,uint16_t x,uint16_t y,uint16_t DimFont,uint16_t Fcolor,uint
 
 		LCD_CS = 0;
 		LCD_Set_Address(x,y,x+7,y+7);
-		for(i = 8; i > 0; i--){
-			for(k = 8; k > 0; k--){
-				print1 = font8x8[k-1] >> (i-1);
+		for(i = 0; i < 8; i++){
+			for(k = 0; k < 8; k++){
+				print1 = font8x8[k] >> i;
 				print2 = print1 & 0x01;
 
 				if(print2 == 1){
@@ -575,17 +575,16 @@ void LCD_Char(char C,uint16_t x,uint16_t y,uint16_t DimFont,uint16_t Fcolor,uint
 
 		LCD_CS = 0;
 		LCD_Set_Address(x,y,x+15,y+15);
-		for(i = 0; i <= 15; i++){
-			for(k = 0; k <= 15; k++){
-				print3 = (font16x16[i] & 0x8000);
-				print4 = print3 >>15;
+		for(i = 0; i < 16; i++){
+			for(k = 0; k < 16; k++){
+				print3 = font16x16[k] >> i;
+				print4 = print3 & 0x01;
 
 				if(print4 == 1){
 					Write_Data(Fcolor);
 				} else {
 					Write_Data(Bcolor);
 				}
-				font16x16[i] = font16x16[i] << 1;
 			}
 		}
 		LCD_CS = 1;
@@ -604,12 +603,12 @@ void LCD_Text(char* S,uint16_t x,uint16_t y,uint16_t DimFont,uint16_t Fcolor,uin
 	}
 
 	if(DimFont == 8){
-		for(cnt = 0; cnt <= (lenght - 1); cnt++){
+		for(cnt = (lenght-1); cnt >= 0; cnt--){
 			LCD_Char(buffer[cnt],x,y,DimFont,Fcolor,Bcolor);
 			x = x + 8;
 		}
 	} else if(DimFont == 16){
-		for(cnt = 0; cnt <= (lenght - 1); cnt++){
+		for(cnt = (lenght-1); cnt >= 0; cnt--){
 			LCD_Char(buffer[cnt],x,y,DimFont,Fcolor,Bcolor);
 			x = x + 16;
 		}
