@@ -23,34 +23,39 @@ void DelayWait(uint32_t X);
 void Pause(void);
 
 int main (void){
-	uint32_t data[2];
 	uint32_t button, state1, state2;
 	PLL_Init(Bus80MHz);
 	GFX_Init();
 	GFX_Paddle(0, 220, 0);
 	GFX_Paddle(1, 200, 0);
-	GFX_Ball(160, 160, 0);
-	Game_Play(0, 0);
+	GFX_Ball(160, 160, 1);
+	//Game_Play(1, 0);
+	Music_Play(1);
 	ADC_Init();
 	Switch_Init();
 	state1 = 0;
 	state2 = 0;
+	LCD_Text("start", 160,160,16,LCD_GREEN,LCD_RED);
 	while(1){
 		button = Switch_GetButton();
 		if(button == 1){
 			if(state1 == 1){
-				LCD_Circle(160, 160, 5, 1, LCD_GREEN);
+				LCD_Text("Ball 0", 160,160,8,LCD_GREEN,LCD_RED);
+				GFX_Ball(160, 160, 0);
 				state1 = 0;
 			} else {
-				LCD_Circle(160, 160, 5, 1, LCD_BLUE);
+				LCD_Text("Ball 1", 160,160,8,LCD_GREEN,LCD_RED);
+				GFX_Ball(160, 160, 1);
 				state1 = 1;
 			}
 			Switch_ResetButton();
 		} else if(button == 2){
 			if(state2 == 1){
+				LCD_Text("Music Stop", 160,160,8,LCD_GREEN,LCD_RED);
 				Music_Stop();
 				state2 = 0;
 			} else {
+				LCD_Text("Music Play", 160,160,8,LCD_GREEN,LCD_RED);
 				Music_Play(1);
 				state2 = 1;
 			}

@@ -1,8 +1,15 @@
 #include <stdint.h>
 
-#define PADDLEH	39
-#define PADDLEW	5
-#define PADDLEF	5
+#define LTUR 	0xC61E
+#define DTUR	0x529A
+#define LRED	0xF618
+#define DRED	0xD28A
+#define GRY		0x4204
+#define LGRY	0x7388
+#define DGRY	0x2102
+
+#define PADDLEH	39	
+#define PADDLEW	16
 #define BALLR 	5
 
 void GFX_Init(void);

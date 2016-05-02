@@ -55,8 +55,8 @@ void Timer0A_Init(uint32_t val){
 
 void Timer0A_Handler(void){
 	TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  DAC_Out((song[SongLoc]+1000)*2);
-
+  //DAC_Out((song[SongLoc]+1000)*2);
+  DAC_Out((song[SongLoc]*2)+1000);
   if(SongLoc == SONGLEN){
     SongLoc = 0;
   } else {

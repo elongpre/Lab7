@@ -38,7 +38,7 @@ uint32_t Ball_Angle;
 uint32_t Ball_Direction; //the direction in which the is currently moving. 0 is moving to the right; 1 is moving to the left
 
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y);
-void ballBounce(int32_t angle, uint32_t paddle_center, int32_t curr_x, int32_t curr_y);
+void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y);
 uint32_t Game_Score(uint32_t option);
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option);
 void Timer1A_Init(uint32_t val);
@@ -52,11 +52,12 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 	if(NewGame){
 		Player1 = 0;
 		Player2 = 0;
-		Paddle1_Center = Paddle0_Y;
-		Paddle2_Center = Paddle1_Y;
+		Paddle1_Center = 160;
+		Paddle2_Center = 160;
 		Ball_Angle = 90;
 		Ball_X = 159;
 		Ball_Y = 119;
+		Ball_Direction = 0;
 		Timer1A_Init(4000000);
 	}
 	ballTrajectory(Ball_Angle,Ball_X,Ball_Y);		//play game; start the ball in the middle 
@@ -66,19 +67,10 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 uint32_t Game_Score(uint32_t option){
 	//change score
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
-<<<<<<< HEAD
 		LCD_Text("Player1 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 
 	} else if(Player2==5) {
 		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
-=======
-		char winner[] = "Player1 has won!";
-		//LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
-
-	} else if(Player2==5) {
-		char winner[] = "Player2 has won!";
-		//LCD_Text(winner,uint16_t x,uint16_t y,uint16_t DimFont,LCD_White,LCD_Black);
->>>>>>> 54e26fc9f97f741877ac39bcf8b856ed8dde0b82
 	}
 	else{			//if no one has won yet, keep playing
 		Game_Play(1, 0);	//start a new round
@@ -89,7 +81,7 @@ uint32_t Game_Score(uint32_t option){
 // left paddle is 0, right paddle is 1
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//--> increment over slope
-	uint32_t i, j;
+	//uint32_t i, j;
 	int32_t new_y;
 	int32_t new_x;
 
@@ -110,14 +102,13 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 		new_y = (curr_y*1000 + Y_Diff2[Ball_Angle])/1000;
 		new_x = (curr_x*1000 + X_Diff2[Ball_Angle])/1000;
 	}
-
+	Ball_X = new_x;
+	Ball_Y = new_y;
 	GFX_Ball(new_x, new_y, 0);
 }
 
 void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//Update paddle centers
-	Paddle1_Center = Paddle0_Y;
-	Paddle2_Center = Paddle1_Y;
 
 	if(curr_x == (9 + BALLR)){ 										//if ball edge is flush with left paddle
 
@@ -178,7 +169,8 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 		}
 
 	} else if((curr_y == (0 + BALLR))||(curr_y == (239 - BALLR))){ 	//if the ball touches either horizontal edge
-		uint32_t i, j;
+		//uint32_t i;
+		uint32_t j;
 		int32_t index;
 		// if(Paddle==0){
 		// 	for(i=0;i<9;i++){
@@ -224,7 +216,8 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option){	//assuming the ball has just hit the other paddle
 	//--> increment over slope
-	uint32_t i, j, paddle_y;
+	//uint32_t i, j; 
+	uint32_t paddle_y;
 	int32_t y, x, b;
 
 	if(Paddle==0){
@@ -293,7 +286,9 @@ void Timer1A_Handler(void){
   ADC_In(data);
   GFX_Paddle(0,data[0],0);
   GFX_Paddle(1,data[1],0);
-
-
+  Paddle1_Center = data[0];
+  Paddle2_Center = data[1];
+  ballTrajectory(Ball_Angle, Ball_X, Ball_Y);
+  ballBounce(Ball_Angle, Ball_X, Ball_Y);
 }
 
