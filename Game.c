@@ -55,16 +55,16 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 		Paddle1_Center = 160;
 		Paddle2_Center = 160;
 		Ball_Angle = 6;
-		Ball_X = 159;
-		Ball_Y = 119;
+		Ball_X = 160;
+		Ball_Y = 120;
 		Ball_Direction = 0;
 		Timer1A_Init(4000000);
 	} else { //TODO: randomize the direction/angle of ball for each round
 		Paddle1_Center = 160;
 		Paddle2_Center = 160;
 		Ball_Angle = 6;
-		Ball_X = 159;
-		Ball_Y = 119;
+		Ball_X = 160;
+		Ball_Y = 120;
 		Ball_Direction = 0;
 		Timer1A_Init(4000000);
 	}
@@ -81,6 +81,8 @@ uint32_t Game_Score(uint32_t option){
 		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 	}
 	else{			//if no one has won yet, keep playing
+		String update = "Current Score is:\nPlayer1: " + Player1 + "\nPlayer2: " + Player2;
+		LCD_Text(update, 10, 10, 8,LCD_WHITE,LCD_BLACK);
 		Game_Play(0, 0);	//start a new round
 	}
 	return 1;
@@ -118,11 +120,11 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//Update paddle centers
 
-	if(curr_x == (9 + BALLR)){ 										//if ball edge is flush with left paddle
+	if(curr_x == (15 + BALLR)){ 										//if ball edge is flush with left paddle
 
 		if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
 
-			uint32_t index = ((((curr_y*1000 - Paddle1_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot
+			int32_t index = ((((curr_y*1000 - Paddle1_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot
 			Ball_Angle = index;											//set the new ball angle
 			Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
 			if(index > 12){
@@ -130,6 +132,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				Player2++;
 				Game_Score(0);
 			} else {
+				Paddle = 0;
 				ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 			
@@ -143,17 +146,18 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				Player2++;
 				Game_Score(0);
 			} else {
+				Paddle = 0; //hits left paddle
 				ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 			
 		}
 
 
-	} else if(curr_x == (309 - BALLR)){ 							//if ball edge is flush with right paddle
+	} else if(curr_x == (304 - BALLR)){ 							//if ball edge is flush with right paddle
 
 		if(curr_y > Paddle2_Center){								//if the ball is above the center of the paddle
 
-			uint32_t index = ((((curr_y*1000 - Paddle2_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot; rounding
+			int32_t index = ((((curr_y*1000 - Paddle2_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot; rounding
 			Ball_Angle = index;										//set the new ball angle
 			Ball_Direction = 1;											//switch the direction of the ball to moving to the left		
 			if(index > 12){
@@ -161,6 +165,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				Player1++;
 				Game_Score(0);
 			} else {
+				Paddle = 1;	//hits right paddle
 				ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
 			}
 		} else {													//if the ball is at or below the center of the paddle
@@ -172,13 +177,14 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				Player1++;
 				Game_Score(0);
 			} else {
+				Paddle = 1; //hits right paddle
 				ballTrajectory(Angle2[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 		}
 
 	} else if((curr_y == (0 + BALLR))||(curr_y == (239 - BALLR))){ 	//if the ball touches either horizontal edge
 		//uint32_t i;
-		uint32_t j;
+		//uint32_t j;
 		int32_t index;
 		// if(Paddle==0){
 		// 	for(i=0;i<9;i++){
@@ -203,7 +209,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 		// 	}
 		// 	angle = Angle2[index];
 		// }
-		index = j - 12;
+		index = Ball_Angle - 12;
 		if(index<0){
 			index = index*(-1);
 		}
@@ -292,10 +298,10 @@ void Timer1A_Handler(void){
   TIMER1_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer1A timeout
 
   ADC_In(data);
-  GFX_Paddle(0,data[0],0);
-  GFX_Paddle(1,data[1],0);
-  Paddle1_Center = data[0];
-  Paddle2_Center = data[1];
+  GFX_Paddle(0,data[1],0);
+  GFX_Paddle(1,data[0],0);
+  Paddle1_Center = data[1];
+  Paddle2_Center = data[0];
   ballTrajectory(Ball_Angle, Ball_X, Ball_Y);
   ballBounce(Ball_Angle, Ball_X, Ball_Y);
 }
