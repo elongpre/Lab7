@@ -54,7 +54,15 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 		Player2 = 0;
 		Paddle1_Center = 160;
 		Paddle2_Center = 160;
-		Ball_Angle = 90;
+		Ball_Angle = 6;
+		Ball_X = 159;
+		Ball_Y = 119;
+		Ball_Direction = 0;
+		Timer1A_Init(4000000);
+	} else { //TODO: randomize the direction/angle of ball for each round
+		Paddle1_Center = 160;
+		Paddle2_Center = 160;
+		Ball_Angle = 6;
 		Ball_X = 159;
 		Ball_Y = 119;
 		Ball_Direction = 0;
@@ -73,7 +81,7 @@ uint32_t Game_Score(uint32_t option){
 		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 	}
 	else{			//if no one has won yet, keep playing
-		Game_Play(1, 0);	//start a new round
+		Game_Play(0, 0);	//start a new round
 	}
 	return 1;
 }
@@ -85,7 +93,7 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 	int32_t new_y;
 	int32_t new_x;
 
-	if(Ball_Direction==0){
+	if(Ball_Direction==0){ //moving left to right
 		// for(i=0;i<9;i++){ //just store the angle as the index?
 		// 	if (Angle1[i] == angle) {
 		// 	j = i;
@@ -93,7 +101,7 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 		// }
 		new_y = (curr_y*1000 + Y_Diff1[Ball_Angle])/1000;	//calculate the new coordinates based on the differentials
 		new_x = (curr_x*1000 + X_Diff1[Ball_Angle])/1000;
-	} else {
+	} else { //moving right to left
 		// for(i=0;i<9;i++){
 		// 	if (Angle2[i] == angle) {
 		// 		j = i;
