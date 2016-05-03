@@ -81,8 +81,8 @@ uint32_t Game_Score(uint32_t option){
 		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
 	}
 	else{			//if no one has won yet, keep playing
-		String update = "Current Score is:\nPlayer1: " + Player1 + "\nPlayer2: " + Player2;
-		LCD_Text(update, 10, 10, 8,LCD_WHITE,LCD_BLACK);
+		//String update = "Current Score is:\nPlayer1: " + Player1 + "\nPlayer2: " + Player2;
+		//LCD_Text(update, 10, 10, 8,LCD_WHITE,LCD_BLACK);
 		Game_Play(0, 0);	//start a new round
 	}
 	return 1;

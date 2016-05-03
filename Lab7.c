@@ -29,8 +29,7 @@ int main (void){
 	GFX_Paddle(0, 220, 0);
 	GFX_Paddle(1, 200, 0);
 	GFX_Ball(160, 160, 1);
-	//Game_Play(1, 0);
-	Music_Play(1);
+	Game_Play(1, 0);
 	ADC_Init();
 	Switch_Init();
 	state1 = 0;

@@ -20,7 +20,7 @@ void Timer0A_Init(uint32_t val);
 void Music_Play(uint32_t tempo){
   DAC_Init(song[0]);
   SongLoc = 0;
-  Timer0A_Init(20000);  //4000hz music  
+  Timer0A_Init(200000);  //4000hz music  
 }
 
 void Music_Stop(void){
@@ -55,8 +55,7 @@ void Timer0A_Init(uint32_t val){
 
 void Timer0A_Handler(void){
 	TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  //DAC_Out((song[SongLoc]+1000)*2);
-  DAC_Out((song[SongLoc]*2)+1000);
+  DAC_Out(song[SongLoc]);
   if(SongLoc == SONGLEN){
     SongLoc = 0;
   } else {
