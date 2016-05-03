@@ -120,105 +120,105 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//Update paddle centers
 
-	Ball_Angle = 2;
 
-	// if(curr_x == (15 + BALLR)){ 										//if ball edge is flush with left paddle
+	if(curr_x == (15 + BALLR)){ 										//if ball edge is flush with left paddle
+		Ball_Angle = 2;
+		// if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
 
-	// 	if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
-
-	// 		int32_t index = ((((curr_y*1000 - Paddle1_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot
-	// 		Ball_Angle = index;											//set the new ball angle
-	// 		Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
-	// 		if(index > 12){
-	// 			//ball keeps moving; left teams loses, so right team gets a point!
-	// 			Player2++;
-	// 			Game_Score(0);
-	// 		} else {
-	// 			Paddle = 0;
-	// 			ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
-	// 		}
+		// 	int32_t index = ((((curr_y*1000 - Paddle1_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot
+		// 	Ball_Angle = index;											//set the new ball angle
+		// 	Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
+		// 	if(index > 12){
+		// 		//ball keeps moving; left teams loses, so right team gets a point!
+		// 		Player2++;
+		// 		Game_Score(0);
+		// 	} else {
+		// 		Paddle = 0;
+		// 		ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
+		// 	}
 			
 
-	// 	} else {													//if the ball is at or below the center of the paddle
-	// 		int32_t index = (((Paddle1_Center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot
-	// 		Ball_Angle = index;										//set the new ball angle
-	// 		Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
-	// 		if(index < 0){
-	// 			//ball keeps moving; left team loses, so right team gets a point!
-	// 			Player2++;
-	// 			Game_Score(0);
-	// 		} else {
-	// 			Paddle = 0; //hits left paddle
-	// 			ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
-	// 		}
+		// } else {													//if the ball is at or below the center of the paddle
+		// 	int32_t index = (((Paddle1_Center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot
+		// 	Ball_Angle = index;										//set the new ball angle
+		// 	Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
+		// 	if(index < 0){
+		// 		//ball keeps moving; left team loses, so right team gets a point!
+		// 		Player2++;
+		// 		Game_Score(0);
+		// 	} else {
+		// 		Paddle = 0; //hits left paddle
+		// 		ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
+		// 	}
 			
-	// 	}
+		// }
 
 
-	// } else if(curr_x == (304 - BALLR)){ 							//if ball edge is flush with right paddle
+	} else if(curr_x == (304 - BALLR)){ 							//if ball edge is flush with right paddle
+		Ball_Angle = 2;
+		// if(curr_y > Paddle2_Center){								//if the ball is above the center of the paddle
 
-	// 	if(curr_y > Paddle2_Center){								//if the ball is above the center of the paddle
+		// 	int32_t index = ((((curr_y*1000 - Paddle2_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot; rounding
+		// 	Ball_Angle = index;										//set the new ball angle
+		// 	Ball_Direction = 1;											//switch the direction of the ball to moving to the left		
+		// 	if(index > 12){
+		// 		//ball keeps moving; right team loses, so left team gets a point!
+		// 		Player1++;
+		// 		Game_Score(0);
+		// 	} else {
+		// 		Paddle = 1;	//hits right paddle
+		// 		ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
+		// 	}
+		// } else {													//if the ball is at or below the center of the paddle
+		// 	int32_t index = (((Paddle2_Center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot; rounding
+		// 	Ball_Angle = index;										//set the new ball angle
+		// 	Ball_Direction = 1;											//switch the direction of the ball to moving to the left	
+		// 	if(index < 0){
+		// 		//ball keeps moving; right team loses, so left team gets a point!
+		// 		Player1++;
+		// 		Game_Score(0);
+		// 	} else {
+		// 		Paddle = 1; //hits right paddle
+		// 		ballTrajectory(Angle2[Ball_Angle],curr_x,curr_y);			//bounce!
+		// 	}
+		// }
 
-	// 		int32_t index = ((((curr_y*1000 - Paddle2_Center*1000)/3000)+500)/1000) + 6;				//find the index of the hit spot; rounding
-	// 		Ball_Angle = index;										//set the new ball angle
-	// 		Ball_Direction = 1;											//switch the direction of the ball to moving to the left		
-	// 		if(index > 12){
-	// 			//ball keeps moving; right team loses, so left team gets a point!
-	// 			Player1++;
-	// 			Game_Score(0);
-	// 		} else {
-	// 			Paddle = 1;	//hits right paddle
-	// 			ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
-	// 		}
-	// 	} else {													//if the ball is at or below the center of the paddle
-	// 		int32_t index = (((Paddle2_Center*1000 - curr_y*1000)/3000)+500)/1000;						//find the index of the hit spot; rounding
-	// 		Ball_Angle = index;										//set the new ball angle
-	// 		Ball_Direction = 1;											//switch the direction of the ball to moving to the left	
-	// 		if(index < 0){
-	// 			//ball keeps moving; right team loses, so left team gets a point!
-	// 			Player1++;
-	// 			Game_Score(0);
-	// 		} else {
-	// 			Paddle = 1; //hits right paddle
-	// 			ballTrajectory(Angle2[Ball_Angle],curr_x,curr_y);			//bounce!
-	// 		}
-	// 	}
+	} else if((curr_y == (0 + BALLR))||(curr_y == (239 - BALLR))){ 	//if the ball touches either horizontal edge
+		//uint32_t i;
+		//uint32_t j;
+		Ball_Angle = 2;
+		// int32_t index;
+		// // if(Paddle==0){
+		// // 	for(i=0;i<9;i++){
+		// // 		if (Angle1[i] == angle) {
+		// // 			j = i;
+		// // 		}
+		// // 	}
+		// // 	index = j - 12;
+		// // 	if(index<0){
+		// // 		index = index*(-1);
+		// // 	}
+		// // 	angle = Angle1[index];
+		// // } else {
+		// // 	for(i=0;i<9;i++){
+		// // 		if (Angle2[i] == angle) {
+		// // 			j = i;
+		// // 		}
+		// // 	}
+		// // 	index = j - 12;
+		// // 	if(index<0){
+		// // 		index = index*(-1);
+		// // 	}
+		// // 	angle = Angle2[index];
+		// // }
+		// index = Ball_Angle - 12;
+		// if(index<0){
+		// 	index = index*(-1);
+		// }
+		// Ball_Angle = index;
+		// ballTrajectory(Ball_Angle,curr_x,curr_y);
 
-	// } else if((curr_y == (0 + BALLR))||(curr_y == (239 - BALLR))){ 	//if the ball touches either horizontal edge
-	// 	//uint32_t i;
-	// 	//uint32_t j;
-	// 	int32_t index;
-	// 	// if(Paddle==0){
-	// 	// 	for(i=0;i<9;i++){
-	// 	// 		if (Angle1[i] == angle) {
-	// 	// 			j = i;
-	// 	// 		}
-	// 	// 	}
-	// 	// 	index = j - 12;
-	// 	// 	if(index<0){
-	// 	// 		index = index*(-1);
-	// 	// 	}
-	// 	// 	angle = Angle1[index];
-	// 	// } else {
-	// 	// 	for(i=0;i<9;i++){
-	// 	// 		if (Angle2[i] == angle) {
-	// 	// 			j = i;
-	// 	// 		}
-	// 	// 	}
-	// 	// 	index = j - 12;
-	// 	// 	if(index<0){
-	// 	// 		index = index*(-1);
-	// 	// 	}
-	// 	// 	angle = Angle2[index];
-	// 	// }
-	// 	index = Ball_Angle - 12;
-	// 	if(index<0){
-	// 		index = index*(-1);
-	// 	}
-	// 	Ball_Angle = index;
-	// 	ballTrajectory(Ball_Angle,curr_x,curr_y);
-
-	// } else if(curr_x == (0 + BALLR)){	//if the ball touches the left side, the ball should go off the screen
+	} //else if(curr_x == (0 + BALLR)){	//if the ball touches the left side, the ball should go off the screen
 	// 	//TODO: make the ball go off the screen
 	// 	Player2++;			//Player2 scores!
 	// 	Game_Score(0); 
