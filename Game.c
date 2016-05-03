@@ -58,7 +58,7 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 		Ball_X = 160;
 		Ball_Y = 120;
 		Ball_Direction = 0;
-		Timer1A_Init(4000000);
+		Timer1A_Init(1000000);
 	} else { //TODO: randomize the direction/angle of ball for each round
 		Paddle1_Center = 160;
 		Paddle2_Center = 160;
@@ -66,7 +66,7 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 		Ball_X = 160;
 		Ball_Y = 120;
 		Ball_Direction = 0;
-		Timer1A_Init(4000000);
+		Timer1A_Init(1000000);
 	}
 	ballTrajectory(Ball_Angle,Ball_X,Ball_Y);		//play game; start the ball in the middle 
 	return 1;
@@ -120,7 +120,7 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//Update paddle centers
 
-	if(curr_x == (15 + BALLR)){ 										//if ball edge is flush with left paddle
+	if(curr_x <= (15 + BALLR)){ 										//if ball edge is flush with left paddle
 
 		if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
 

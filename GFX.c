@@ -79,6 +79,7 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 		return;
 	}
 	if(x==0){
+		y=(y+GFX_Pad0_Y+GFX_Pad0_Y+GFX_Pad0_Y)/4;
 		LCD_Box(0, GFX_Pad0_Y+pad_h, 15, GFX_Pad0_Y-pad_h, LCD_BLACK);
 		xline = 15;
 		LCD_Box(xline, top-1, xline, top-37, DTUR);		//1
@@ -124,6 +125,7 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 		LCD_Box(xline, top-17, xline, top-21, GRY);
 		GFX_Pad0_Y = y;
 	} else {
+		y=(y+GFX_Pad1_Y+GFX_Pad1_Y+GFX_Pad1_Y)/4;
 		LCD_Box(319, GFX_Pad1_Y+pad_h, 304, GFX_Pad1_Y-pad_h, LCD_BLACK);
 		xline = 304;
 		LCD_Box(xline, top-1, xline, top-37, DRED);		//1
@@ -168,7 +170,6 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 		xline++;
 		LCD_Box(xline, top-17, xline, top-21, GRY);
 		GFX_Pad1_Y = y;
-
 	}
 
 
