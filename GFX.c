@@ -75,12 +75,16 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 	uint16_t xline;
 	uint16_t pad_h = PADDLEH/2;
 	uint16_t top = y+pad_h;
-	if((y>(239-pad_h))||(y<pad_h)){
+	int16_t compare;
+	if((y>(239-pad_h-2))||(y<(pad_h+2))){
 		return;
 	}
 	if(x==0){
-		y=(y+GFX_Pad0_Y+GFX_Pad0_Y+GFX_Pad0_Y)/4;
-		LCD_Box(0, GFX_Pad0_Y+pad_h, 15, GFX_Pad0_Y-pad_h, LCD_BLACK);
+		compare = GFX_Pad0_Y-y;
+		if((compare<4)&&(compare>(-4))){
+			return;
+		}
+		LCD_Box(0, GFX_Pad0_Y+pad_h+1, 15, GFX_Pad0_Y-pad_h-1, LCD_BLACK);
 		xline = 15;
 		LCD_Box(xline, top-1, xline, top-37, DTUR);		//1
 		xline--;
@@ -125,7 +129,10 @@ void GFX_Paddle(uint16_t x, uint16_t y, uint16_t option){
 		LCD_Box(xline, top-17, xline, top-21, GRY);
 		GFX_Pad0_Y = y;
 	} else {
-		y=(y+GFX_Pad1_Y+GFX_Pad1_Y+GFX_Pad1_Y)/4;
+		compare = GFX_Pad1_Y-y;
+		if((compare<4)&&(compare>(-4))){
+			return;
+		}
 		LCD_Box(319, GFX_Pad1_Y+pad_h, 304, GFX_Pad1_Y-pad_h, LCD_BLACK);
 		xline = 304;
 		LCD_Box(xline, top-1, xline, top-37, DRED);		//1

@@ -120,7 +120,7 @@ void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//Update paddle centers
 
-	if(curr_x <= (15 + BALLR)){ 										//if ball edge is flush with left paddle
+	if(curr_x == (15 + BALLR)){ 										//if ball edge is flush with left paddle
 
 		if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
 
