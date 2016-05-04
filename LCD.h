@@ -1,8 +1,9 @@
 #ifndef _lcddriver_
 #define _lcddriver_
 
+#include <stdint.h>
 // Color definitions
-#define LCD_BLACK   0x0000
+#define LCD_BLACK   0x528A
 #define LCD_RED     0xF800
 #define LCD_BLUE    0x001F
 #define LCD_GREEN   0x07E0

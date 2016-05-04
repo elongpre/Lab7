@@ -31,10 +31,11 @@ int main (void){
 	GFX_Ball(160, 160, 1);
 	Game_Play(1, 0);
 	ADC_Init();
-	Switch_Init();
+	//Switch_Init();
 	state1 = 0;
 	state2 = 0;
 	while(1){
+		/*
 		button = Switch_GetButton();
 		if(button == 1){
 			if(state1 == 1){
@@ -56,7 +57,7 @@ int main (void){
 				state2 = 1;
 			}
 			Switch_ResetButton();
-		}
+		}*/
 	}
 }
 
