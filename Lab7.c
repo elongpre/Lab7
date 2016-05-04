@@ -31,19 +31,17 @@ int main (void){
 	GFX_Ball(160, 160, 1);
 	Game_Play(1, 0);
 	ADC_Init();
-	Switch_Init();
+	//Switch_Init();
 	state1 = 0;
 	state2 = 0;
-	LCD_Text("start", 160,160,16,LCD_GREEN,LCD_RED);
 	while(1){
+		/*
 		button = Switch_GetButton();
 		if(button == 1){
 			if(state1 == 1){
-				LCD_Text("Ball 0", 160,160,8,LCD_GREEN,LCD_RED);
 				GFX_Ball(160, 160, 0);
 				state1 = 0;
 			} else {
-				LCD_Text("Ball 1", 160,160,8,LCD_GREEN,LCD_RED);
 				GFX_Ball(160, 160, 1);
 				state1 = 1;
 			}
@@ -59,7 +57,7 @@ int main (void){
 				state2 = 1;
 			}
 			Switch_ResetButton();
-		}
+		}*/
 	}
 }
 
