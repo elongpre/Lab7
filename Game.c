@@ -18,7 +18,7 @@
 #include "ADC.h"
 #include "Switch.h"
 
-const uint32_t PlayerMode[3] = {0, 1, 2}; //Mode 0 is demo mode, Mode 1 is Computer vs. Human, and Mode 2 is Human vs. Human
+// const uint32_t PlayerMode[3] = {0, 1, 2}; //Mode 0 is demo mode, Mode 1 is Computer vs. Human, and Mode 2 is Human vs. Human
 // const int32_t Angle[9] = {20,40,60,80,90,100,120,140,160}
 // const int32_t X_Diff[9] = {940,766,500,174,0,-174,-500,-766,-940}
 // const int32_t Y_Diff[9] = {342,643,866,985,1000,985,866,643,342}
@@ -50,6 +50,7 @@ void Timer1A_Init(uint32_t val);
 void Timer1A_Handler(void);
 void EnableInterrupts(void);
 void DisableInterrupts(void);
+void DelayWait(uint32_t X);
 
 // GFX_Paddle(uint16_t x, uint16_t y, uint16_t option);
 
@@ -79,15 +80,28 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 uint32_t Game_Score(uint32_t option){
 	//change score
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
-		LCD_Text("Player1 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
+		LCD_Text("Player1 has won!", 160, 120, 16,LCD_WHITE,LCD_BLACK);
 		Ball_Direction = 2;
 	} else if(Player2==5) {
-		LCD_Text("Player2 has won!", 10, 10, 8,LCD_WHITE,LCD_BLACK);
+		LCD_Text("Player2 has won!", 160, 120, 16,LCD_WHITE,LCD_BLACK);
 		Ball_Direction = 2;
 	}
 	else{			//if no one has won yet, keep playing
-		//String update = "Current Score is:\nPlayer1: " + Player1 + "\nPlayer2: " + Player2;
-		//LCD_Text(update, 10, 10, 8,LCD_WHITE,LCD_BLACK);
+		char integer_string1[32];
+		char integer_string2[32];
+		sprintf(integer_string1,"%d",Player1);
+		sprintf(integer_string2,"%d",Player2);
+		char update[65] = "";
+		strcat(update,integer_string1);
+		strcat(update,"\t");
+		strcat(update,integer_string2);
+
+		LCD_Text("Player1\tPlayer2", 160, 100, 16,LCD_WHITE,LCD_BLACK);
+		LCD_Text(update, 160, 140, 16,LCD_WHITE,LCD_BLACK);
+		DelayWait(3000);
+		// LCD_Fill();
+		LCD_Text("Player1\tPlayer2", 160, 100, 16,LCD_BLACK,LCD_BLACK);	//LOL my ghetto erase
+		LCD_Text(update, 160, 140, 16,LCD_BLACK,LCD_BLACK);
 		Game_Play(0, 0);	//start a new round
 	}
 	return 1;
@@ -96,26 +110,15 @@ uint32_t Game_Score(uint32_t option){
 // left paddle is 0, right paddle is 1
 void ballTrajectory(int32_t angle, int32_t curr_x, int32_t curr_y){
 	//--> increment over slope
-	//uint32_t i, j;
 	int32_t new_y;
 	int32_t new_x;
 
 	curr_x = Ball_X;
 	curr_y = Ball_Y;
 	if(Ball_Direction==0){ //moving left to right
-		// for(i=0;i<9;i++){ //just store the angle as the index?
-		// 	if (Angle1[i] == angle) {
-		// 	j = i;
-		// 	}
-		// }
 		new_y = (curr_y*500 + Y_Diff1[Ball_Angle])/500;	//calculate the new coordinates based on the differentials
 		new_x = (curr_x*500 + X_Diff1[Ball_Angle])/500;
 	} else { //moving right to left
-		// for(i=0;i<9;i++){
-		// 	if (Angle2[i] == angle) {
-		// 		j = i;
-		// 	}
-		// }
 		new_y = (curr_y*500 + Y_Diff2[Ball_Angle])/500;
 		new_x = (curr_x*500 + X_Diff2[Ball_Angle])/500;
 	}
@@ -197,32 +200,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 		Debounce = 2;	
 
 	} else if((curr_y <= (2 + BALLR))||(curr_y >= (237 - BALLR))){ 	//if the ball touches either horizontal edge
-		//uint32_t i;
-		//uint32_t j;
 		int32_t index;
-		// if(Paddle==0){
-		// 	for(i=0;i<9;i++){
-		// 		if (Angle1[i] == angle) {
-		// 			j = i;
-		// 		}
-		// 	}
-		// 	index = j - 12;
-		// 	if(index<0){
-		// 		index = index*(-1);
-		// 	}
-		// 	angle = Angle1[index];
-		// } else {
-		// 	for(i=0;i<9;i++){
-		// 		if (Angle2[i] == angle) {
-		// 			j = i;
-		// 		}
-		// 	}
-		// 	index = j - 12;
-		// 	if(index<0){
-		// 		index = index*(-1);
-		// 	}
-		// 	angle = Angle2[index];
-		// }
 		index = Ball_Angle - 12;
 		if(index<0){
 			index = index*(-1);
@@ -232,50 +210,25 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 		Debounce = 2;
 
 	} else if(curr_x <= (7 + BALLR)){	//if the ball touches the left side, the ball should go off the screen
-		//TODO: make the ball go off the screen
+		//make the ball go off the screen
+		GFX_BallDel();
 		Player2++;			//Player2 scores!
 		Game_Score(0); 
 
 	} else if(curr_x >= (312 - BALLR)){	//if the ball touches the right side, the ball should go off the screen
-		//TODO: make the ball go off the screen
+		//ake the ball go off the screen
+		GFX_BallDel();
 		Player1++;			//Player1 scores!
 		Game_Score(0); 
 	}
 }
 
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option){	//assuming the ball has just hit the other paddle
-	//--> increment over slope
-	//uint32_t i, j; 
 	uint32_t paddle_y;
 	int32_t y, x, b;
 
 	ball_y = Ball_Y;
 	ball_x = Ball_X;
-	// if(Paddle==0){
-	// 	// for(i=0;i<9;i++){
-	// 	// 	if (Angle1[i] == angle) {
-	// 	// 		j = i;
-	// 	// 	}
-	// 	// }
-	// 	y = (ball_y*1000 + Y_Diff1[Ball_Angle]);
-	// 	x = (ball_x*1000 + X_Diff1[Ball_Angle]);
-	// } else{
-	// 	// for(i=0;i<9;i++){
-	// 	// 	if (Angle2[i] == angle) {
-	// 	// 		j = i;
-	// 	// 	}
-	// 	// }
-	// 	y = (ball_y*1000 + Y_Diff2[Ball_Angle]);
-	// 	x = (ball_x*1000 + X_Diff2[Ball_Angle]);
-	// }
-
-	// if(option == 0){									//if the left paddle is controlled by AI
-	// 	b = -(y/x)*(314000); // b = -mx
-	// 	paddle_y = ((y/x)*(314000) + b)/1000;
-	// } else{												//if the right paddle is controlled by AI
-	// 	b = -(y/x)*(9000); // b = -mx
-	// 	paddle_y = ((y/x)*(9000) + b)/1000;
-	// }
 
 	//x is 0 for left, 1 for right paddle
 	//y is the y value on the axis
@@ -370,3 +323,18 @@ void Timer1A_Handler(void){
   ballBounce(Ball_Angle, Ball_X, Ball_Y);
 }
 
+// Subroutine to wait X msec
+// Inputs: None
+// Outputs: None
+// Notes: ...
+void DelayWait(uint32_t X){
+	uint32_t n = X;
+	uint32_t volatile time;
+  	while(n){
+    	time = 727240*2/91;  // 10msec
+    	while(time){
+      	time--;
+    	}
+    	n--;
+  	}	
+}
