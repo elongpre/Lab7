@@ -323,6 +323,8 @@ void Timer1A_Handler(void){
   ballBounce(Ball_Angle, Ball_X, Ball_Y);
 }
 
+//(92.38(.5) + 47(.15) + 33(.15)) +  x(.2) = 80
+
 // Subroutine to wait X msec
 // Inputs: None
 // Outputs: None
