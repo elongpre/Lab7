@@ -79,6 +79,7 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 
 uint32_t Game_Score(uint32_t option){
 	//change score
+	GFX_BallDel();
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
 		LCD_Text("BLUE has won!", 68, 110, 16,LCD_BLUE,LCD_BLACK);
 		Ball_Direction = 2;
@@ -136,7 +137,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 	}
 	if(curr_x <= (15 + BALLR)){ 										//if ball edge is flush with left paddle
 
-		if(curr_y > Paddle1_Center){								//if the ball is above the center of the paddle
+		if((curr_y > Paddle1_Center)&&(curr_y<= (Paddle1_Center+19))){								//if the ball is above the center of the paddle
 
 			int32_t index = ((((curr_y*1000 - Paddle1_Center*1000)/3)+500)/1000) + 6;				//find the index of the hit spot
 			Ball_Angle = index;											//set the new ball angle
@@ -151,7 +152,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 			}
 			
 
-		} else {													//if the ball is at or below the center of the paddle
+		} else if ((curr_y <= Paddle1_Center)&&(curr_y >= (Paddle1_Center-19))) {													//if the ball is at or below the center of the paddle
 			int32_t index = (((Paddle1_Center*1000 - curr_y*1000)/3)+500)/1000;						//find the index of the hit spot
 			Ball_Angle = index;										//set the new ball angle
 			Ball_Direction = 0;											//switch the direction of the ball to moving to the right		
@@ -164,12 +165,28 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				ballTrajectory(Angle1[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
 			
+		} else {	//if the ball is not near the paddle, keep going
+
+			if(curr_x <= (7 + BALLR)){	//if the ball touches the left side, the ball should go off the screen
+				//make the ball go off the screen
+				GFX_BallDel();
+				Player2++;			//Player2 scores!
+				Game_Score(0); 
+			} else if((curr_y <= (2 + BALLR))||(curr_y >= (237 - BALLR))){ 	//if the ball touches either horizontal edge
+				int32_t index;
+				index = Ball_Angle - 12;
+				if(index<0){
+					index = index*(-1);
+				}
+				Ball_Angle = index;
+				ballTrajectory(Ball_Angle,curr_x,curr_y);
+			} 
 		}
 		Debounce = 2;
 
 	} else if(curr_x >= (304 - BALLR)){ 							//if ball edge is flush with right paddle
 
-		if(curr_y > Paddle2_Center){								//if the ball is above the center of the paddle
+		if((curr_y > Paddle2_Center)&&(curr_y<= (Paddle2_Center+19))){								//if the ball is above the center of the paddle
 
 			int32_t index = ((((curr_y*1000 - Paddle2_Center*1000)/3)+500)/1000) + 6;				//find the index of the hit spot; rounding
 			Ball_Angle = index;										//set the new ball angle
@@ -182,7 +199,7 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				Paddle = 1;	//hits right paddle
 				ballTrajectory(Angle2[index],curr_x,curr_y);			//bounce!
 			}
-		} else {													//if the ball is at or below the center of the paddle
+		} else if ((curr_y <= Paddle2_Center)&&(curr_y >= (Paddle2_Center-19))) {													//if the ball is at or below the center of the paddle
 			int32_t index = (((Paddle2_Center*1000 - curr_y*1000)/3)+500)/1000;						//find the index of the hit spot; rounding
 			Ball_Angle = index;										//set the new ball angle
 			Ball_Direction = 1;											//switch the direction of the ball to moving to the left	
@@ -194,6 +211,22 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 				Paddle = 1; //hits right paddle
 				ballTrajectory(Angle2[Ball_Angle],curr_x,curr_y);			//bounce!
 			}
+		} else {	//if the ball is not near the paddle, keep going
+
+			if(curr_x >= (312 - BALLR)){	//if the ball touches the right side, the ball should go off the screen
+				//make the ball go off the screen
+				GFX_BallDel();
+				Player1++;			//Player1 scores!
+				Game_Score(0); 
+			} else if((curr_y <= (2 + BALLR))||(curr_y >= (237 - BALLR))){ 	//if the ball touches either horizontal edge
+				int32_t index;
+				index = Ball_Angle - 12;
+				if(index<0){
+					index = index*(-1);
+				}
+				Ball_Angle = index;
+				ballTrajectory(Ball_Angle,curr_x,curr_y);
+			} 
 		}
 		Debounce = 2;	
 
