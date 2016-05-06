@@ -81,10 +81,14 @@ uint32_t Game_Score(uint32_t option){
 	//change score
 	GFX_BallDel();
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
+		Music_Stop();
+		Music_Victory();
 		LCD_Text("BLUE has won!", 68, 110, 16,LCD_BLUE,LCD_BLACK);
 		Ball_Direction = 2;
 		LCD_Text("Press START to try again", 72, 135, 8,LCD_WHITE, LCD_BLACK);
 	} else if(Player2==5) {
+		Music_Stop();
+		Music_Victory();
 		LCD_Text("RED has won!", 60, 110, 16,LCD_RED,LCD_BLACK);
 		LCD_Text("Press START to try again", 72, 135, 8,LCD_WHITE, LCD_BLACK);
 		Ball_Direction = 2;
@@ -92,6 +96,7 @@ uint32_t Game_Score(uint32_t option){
 	else{			//if no one has won yet, keep playing
 		char score1;
 		char score2;
+
 
 		score1 = Player1+48;
 		LCD_Text(&score1, 100, 120, 16,LCD_BLUE,LCD_BLACK);
@@ -256,10 +261,9 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option){	//assuming the ball has just hit the other paddle
 	uint32_t paddle_y;
-	int32_t y, x, b;
 
 	ball_y = Ball_Y;
-	ball_x = Ball_X;
+	//ball_x = Ball_X;
 
 	//x is 0 for left, 1 for right paddle
 	//y is the y value on the axis
@@ -361,6 +365,7 @@ void Timer1A_Handler(void){
 void DelayWait(uint32_t X){
 	uint32_t n = X;
 	uint32_t volatile time;
+	EnableInterrupts();
   	while(n){
     	time = 727240*2/91;  // 10msec
     	while(time){

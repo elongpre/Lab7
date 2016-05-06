@@ -11,16 +11,25 @@
 #include "Music.h"
 #include "Song.h"
 
-uint16_t SongLoc;
+uint32_t SongLoc;
+uint32_t SongNum;
 
 void EnableInterrupts(void);
 void DisableInterrupts(void);
 void Timer0A_Init(uint32_t val);
 
-void Music_Play(uint32_t tempo){
+void Music_Play(void){
   DAC_Init(song[0]);
   SongLoc = 0;
-  Timer0A_Init(20000);  //4000hz music  
+  SongNum = 0;
+  Timer0A_Init(10000);  //4000hz music  
+}
+
+void Music_Victory(void){
+  DAC_Init(victory[0]);
+  SongLoc = 0;
+  SongNum = 1;
+  Timer0A_Init(10000);  //4000hz music
 }
 
 void Music_Stop(void){
@@ -48,17 +57,25 @@ void Timer0A_Init(uint32_t val){
   TIMER0_CTL_R |= TIMER_CTL_TAEN;  	// enable timer0A 16-b, periodic, interrupts
   // **** interrupt initialization ****
                                    	// Timer0A=priority 4
-  NVIC_PRI4_R = (NVIC_PRI4_R&0x00FFFFFF)|0x80000000; // top 3 bits
+  NVIC_PRI4_R = (NVIC_PRI4_R&0x00FFFFFF)|0x60000000; // top 3 bits
   NVIC_EN0_R = 1<<19;              	// enable interrupt 19 in NVIC	
   EnableInterrupts();
 }
 
 void Timer0A_Handler(void){
 	TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  DAC_Out(song[SongLoc]);
-  if(SongLoc == SONGLEN){
-    SongLoc = 0;
+  if(SongNum == 0){
+    DAC_Out(song[SongLoc]);
+    if(SongLoc == SONGLEN){
+      SongLoc = 0;
+    } else {
+      SongLoc++;
+    }
   } else {
-    SongLoc++;
+    DAC_Out(victory[SongLoc]);
+    if(SongLoc != VICTLEN){
+      SongLoc++;
+    }
   }
+
 }

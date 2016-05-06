@@ -29,7 +29,7 @@ int main (void){
 	GFX_Ball(160, 160, 1);
 	Game_Play(1, 0);
 	ADC_Init();
-	Music_Play(4);
+	Music_Play();
 	while(1){
 	}
 }

@@ -26,5 +26,5 @@ void DAC_Init(uint16_t data){
 
 void DAC_Out(uint16_t data){   
   while((SSI1_SR_R&0x00000002)==0){};// SSI Transmit FIFO Not Full
-  SSI1_DR_R = data;                 // data out, no reply
+  SSI1_DR_R = data/2;                 // data out, no reply
 }
