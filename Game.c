@@ -61,7 +61,7 @@ uint16_t Game_Play(uint16_t NewGame, uint16_t option){
 		Player2 = 0;
 		Ball_Angle = 6;
 		Ball_Direction = 0;
-		Ai0 = 1;
+		Ai0 = 0;
 		Ai1 = 1;
 	} else { //TODO: randomize the direction/angle of ball for each round
 		Ball_Angle = 6;
@@ -81,28 +81,31 @@ uint32_t Game_Score(uint32_t option){
 	//change score
 	GFX_BallDel();
 	if(Player1==5){			//check if someone has won the game --> first to reach 5
-		LCD_Text("Player1 has won!", 160, 120, 16,LCD_WHITE,LCD_BLACK);
+		Music_Stop();
+		Music_Victory();
+		LCD_Text("BLUE has won!", 68, 110, 16,LCD_BLUE,LCD_BLACK);
 		Ball_Direction = 2;
+		LCD_Text("Press START to try again", 72, 135, 8,LCD_WHITE, LCD_BLACK);
 	} else if(Player2==5) {
-		LCD_Text("Player2 has won!", 160, 120, 16,LCD_WHITE,LCD_BLACK);
+		Music_Stop();
+		Music_Victory();
+		LCD_Text("RED has won!", 60, 110, 16,LCD_RED,LCD_BLACK);
+		LCD_Text("Press START to try again", 72, 135, 8,LCD_WHITE, LCD_BLACK);
 		Ball_Direction = 2;
 	}
 	else{			//if no one has won yet, keep playing
-		char integer_string1[32];
-		char integer_string2[32];
-		sprintf(integer_string1,"%d",Player1);
-		sprintf(integer_string2,"%d",Player2);
-		char update[65] = "";
-		strcat(update,integer_string1);
-		strcat(update,"\t");
-		strcat(update,integer_string2);
+		char score1;
+		char score2;
 
-		LCD_Text("Player1\tPlayer2", 160, 100, 16,LCD_WHITE,LCD_BLACK);
-		LCD_Text(update, 160, 140, 16,LCD_WHITE,LCD_BLACK);
-		DelayWait(3000);
+
+		score1 = Player1+48;
+		LCD_Text(&score1, 100, 120, 16,LCD_BLUE,LCD_BLACK);
+		score2 = Player2+48;
+		LCD_Text(&score2, 220, 120, 16,LCD_RED,LCD_BLACK);
+		DelayWait(1000);
 		// LCD_Fill();
-		LCD_Text("Player1\tPlayer2", 160, 100, 16,LCD_BLACK,LCD_BLACK);	//LOL my ghetto erase
-		LCD_Text(update, 160, 140, 16,LCD_BLACK,LCD_BLACK);
+		LCD_Text(&score1, 100, 120, 16,LCD_BLACK,LCD_BLACK);
+		LCD_Text(&score2, 220, 120, 16,LCD_BLACK,LCD_BLACK);
 		Game_Play(0, 0);	//start a new round
 	}
 	return 1;
@@ -258,10 +261,9 @@ void ballBounce(int32_t angle, int32_t curr_x, int32_t curr_y){
 
 void AI_paddle_control(int32_t angle, uint32_t ball_x, uint32_t ball_y, uint32_t option){	//assuming the ball has just hit the other paddle
 	uint32_t paddle_y;
-	int32_t y, x, b;
 
 	ball_y = Ball_Y;
-	ball_x = Ball_X;
+	//ball_x = Ball_X;
 
 	//x is 0 for left, 1 for right paddle
 	//y is the y value on the axis
@@ -363,6 +365,7 @@ void Timer1A_Handler(void){
 void DelayWait(uint32_t X){
 	uint32_t n = X;
 	uint32_t volatile time;
+	EnableInterrupts();
   	while(n){
     	time = 727240*2/91;  // 10msec
     	while(time){
